@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Calculadora de Crianza Dinámica 6 IVs</title>
+  <style>
+    body {
+      background-color: #1a1a1a;
+      color: #ffffff;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      padding: 20px;
+      margin: 0;
+    }
+
+    /* ENCABEZADO Y PANELES SUPERIORES ALINEADOS */
+    .top-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: stretch; /* PANELES DE LA MISMA ALTURA */
+      max-width: 1100px;
+      margin: 0 auto 25px auto;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+
+    .title-area {
+      flex: 1 1 100%;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+    h1 { margin: 0 0 5px 0; color: #00e676; font-size: 26px; }
+    .subtitle { color: #aaa; font-size: 13px; margin: 0; }
+
+    /* PANELES CON ALTURA UNIFORME */
+    .top-panel {
+      background: #262626;
+      border: 1px solid #00e676;
+      border-radius: 8px;
+      padding: 14px 16px;
+      flex: 1;
+      min-width: 300px;
+      box-shadow: 0 4px 12px rgba(0,230,118,0.08);
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .top-panel h3 {
+      margin: 0 0 10px 0;
+      font-size: 14px;
+      color: #00e676;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* COMPROBADOR DE COMPATIBILIDAD CON IMÁGENES */
+    .compat-container {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      height: 100%;
+      justify-content: space-between;
+    }
+    
+    .compat-inputs-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .pkmn-input-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: #1e1e1e;
+      padding: 6px;
+      border-radius: 6px;
+      border: 1px solid #333;
+    }
+
+    .pkmn-input-box input {
+      background: #181818;
+      border: 1px solid #444;
+      color: #fff;
+      padding: 6px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      width: 100%;
+      box-sizing: border-box;
+      text-align: center;
+    }
+
+    .pkmn-sprite {
+      width: 56px;
+      height: 56px;
+      margin-top: 4px;
+      object-fit: contain;
+      image-rendering: pixelated;
+      display: none;
+    }
+
+    .compat-result {
+      font-size: 12px;
+      font-weight: bold;
+      padding: 8px;
+      border-radius: 4px;
+      text-align: center;
+      background: #181818;
+      color: #aaa;
+      border: 1px solid #333;
+      margin-top: auto;
+    }
+    .compat-success { background: #1b5e20; color: #81c784; border-color: #2e7d32; }
+    .compat-error { background: #b71c1c; color: #ef9a9a; border-color: #c62828; }
+
+    /* PANEL ECONÓMICO */
+    .econ-grid {
+      display: grid;
+      grid-template-columns: 1fr 90px;
+      gap: 6px;
+      align-items: center;
+      font-size: 12px;
+    }
+    .econ-grid label { color: #ccc; font-weight: normal; }
+    .econ-grid input {
+      background: #181818;
+      border: 1px solid #444;
+      color: #fff;
+      padding: 4px 6px;
+      border-radius: 4px;
+      text-align: right;
+      font-size: 12px;
+    }
+    .total-row {
+      margin-top: 10px;
+      padding-top: 8px;
+      border-top: 1px solid #444;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: bold;
+      font-size: 14px;
+    }
+    .total-price { color: #00e676; font-size: 16px; }
+
+    /* CONFIGURACIÓN INICIAL */
+    .panel-config {
+      background-color: #262626;
+      padding: 20px;
+      border-radius: 8px;
+      max-width: 1060px;
+      margin: 0 auto 30px auto;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.6);
+      border: 1px solid #333;
+    }
+    
+    .grid-inputs {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .card-input {
+      background: #333;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #444;
+    }
+
+    label { font-size: 12px; font-weight: bold; display: block; margin-bottom: 4px; color: #ddd; }
+    select {
+      width: 100%;
+      padding: 6px;
+      background: #1e1e1e;
+      color: #fff;
+      border: 1px solid #555;
+      border-radius: 4px;
+      margin-bottom: 6px;
+      font-size: 12px;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background: #00e676;
+      color: #000;
+      font-weight: 900;
+      font-size: 15px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    button:hover { background: #00c853; }
+
+    .error-msg {
+      background: #d32f2f;
+      color: #fff;
+      padding: 10px;
+      border-radius: 6px;
+      text-align: center;
+      margin-bottom: 15px;
+      display: none;
+      font-weight: bold;
+    }
+
+    /* ESTRUCTURA DEL ÁRBOL */
+    .tree-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 45px;
+      overflow-x: auto;
+      padding-bottom: 60px;
+      position: relative;
+    }
+
+    .level {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      width: 100%;
+      position: relative;
+      z-index: 2;
+    }
+
+    .node {
+      background: #262626;
+      border: 1px solid #444;
+      border-radius: 8px;
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      min-width: 200px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+      position: relative;
+      box-sizing: border-box;
+    }
+
+    .stats-container { 
+      display: flex; 
+      gap: 3px; 
+      flex-wrap: nowrap;
+      justify-content: center; 
+      width: 100%;
+    }
+    
+    /* MODIFICADO: Letras dentro de los cuadraditos en #181818 */
+    .badge {
+      padding: 3px 5px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 800;
+      color: #181818;
+      text-transform: uppercase;
+    }
+
+    .dot-icon {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      display: inline-block;
+      margin-left: 5px;
+      vertical-align: middle;
+    }
+
+    .parents-info {
+      font-size: 11px;
+      background: #181818;
+      padding: 6px 8px;
+      border-radius: 4px;
+      border: 1px solid #333;
+      margin-top: 2px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .parent-line { 
+      margin: 2px 0; 
+      display: flex; 
+      align-items: center; 
+      white-space: nowrap;
+    }
+    
+    .male-text { color: #2196f3; font-weight: bold; }
+    .female-text { color: #e91e63; font-weight: bold; }
+
+    .gender-selector {
+      background: #1e1e1e;
+      color: #00e676;
+      border: 1px solid #00e676;
+      font-size: 11px;
+      font-weight: bold;
+      border-radius: 4px;
+      padding: 4px 4px;
+      margin-top: 2px;
+      cursor: pointer;
+      width: 100%;
+      text-align: center;
+    }
+
+    .required-badge {
+      font-size: 10px;
+      padding: 4px 6px;
+      border-radius: 4px;
+      font-weight: bold;
+      margin-top: 2px;
+      width: 100%;
+      text-align: center;
+      box-sizing: border-box;
+      text-transform: uppercase;
+    }
+    .req-male { background: #0d47a1; color: #82b1ff; border: 1px solid #1565c0; }
+    .req-female { background: #880e4f; color: #ff80ab; border: 1px solid #ad1457; }
+
+    /* COLORES POR STAT (SA actualizado a #dd5ed9) */
+    .bg-AT { background-color: #e53935; }
+    .bg-SA { background-color: #dd5ed9; }
+    .bg-PS { background-color: #4caf50; }
+    .bg-SP { background-color: #00acc1; }
+    .bg-DF { background-color: #fb8c00; }
+    .bg-SD { background-color: #fdd835; }
+
+    .step-label { font-size: 11px; color: #aaa; font-weight: bold; }
+
+    /* SVG PARA LÍNEAS ORTOGONALES */
+    .connections-svg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="top-header">
+    <div class="title-area">
+      <h1>🧬 Generador de Árbol de Crianza Dinámico</h1>
+      <p class="subtitle">Calculadora técnica, visual y financiera para crianza perfecta de 6 IVs</p>
+    </div>
+
+    <!-- COMPROBADOR DE COMPATIBILIDAD CON POKEAPI E IMÁGENES -->
+    <div class="top-panel">
+      <h3>🔍 Comprobador de Compatibilidad</h3>
+      <div class="compat-container">
+        <div class="compat-inputs-grid">
+          <div class="pkmn-input-box">
+            <input type="text" id="pkmn1" placeholder="Ej: Dratini" list="pkmn-list" oninput="debounceCompatibilidad()">
+            <img id="img-pkmn1" class="pkmn-sprite" alt="Sprite 1">
+          </div>
+          <div class="pkmn-input-box">
+            <input type="text" id="pkmn2" placeholder="Ej: Magikarp" list="pkmn-list" oninput="debounceCompatibilidad()">
+            <img id="img-pkmn2" class="pkmn-sprite" alt="Sprite 2">
+          </div>
+        </div>
+        <datalist id="pkmn-list"></datalist>
+        <div id="compat-result" class="compat-result">Ingresa 2 Pokémon para verificar...</div>
+      </div>
+    </div>
+
+    <!-- PANEL ECONÓMICO (Modificado: Costo por Género:) -->
+    <div class="top-panel">
+      <h3>💰 Presupuesto de Crianza</h3>
+      <div class="econ-grid">
+        <label>Costo por Cruza:</label>
+        <input type="number" id="cost-breed" value="2500" oninput="calcularPresupuesto()">
+        
+        <label>Costo por Banda:</label>
+        <input type="number" id="cost-band" value="500" oninput="calcularPresupuesto()">
+        
+        <label>Costo por Género:</label>
+        <input type="number" id="cost-gender" value="5000" oninput="calcularPresupuesto()">
+      </div>
+      <div class="total-row">
+        <span>Costo Total Est.:</span>
+        <span class="total-price" id="total-price-display">$102.500</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel-config">
+    <div id="error-box" class="error-msg"></div>
+    <div class="grid-inputs" id="inputs-container"></div>
+    <button onclick="generarArbolInteligente()">¡ORGANIZAR GÉNEROS Y GENERAR ÁRBOL!</button>
+  </div>
+
+  <div class="tree-container" id="tree-result">
+    <svg id="svg-connections" class="connections-svg"></svg>
+  </div>
+
+  <script>
+    const STATS = [
+      { code: 'AT', name: 'Ataque' },
+      { code: 'SA', name: 'Atq. Esp' },
+      { code: 'PS', name: 'Salud' },
+      { code: 'SP', name: 'Velocidad' },
+      { code: 'DF', name: 'Defensa' },
+      { code: 'SD', name: 'Def. Esp' }
+    ];
+
+    const BANDS = {
+      'AT': { name: 'Brazal recio', color: '#e53935' },
+      'SA': { name: 'Lente recia', color: '#dd5ed9' },
+      'PS': { name: 'Pesa recia', color: '#4caf50' },
+      'SP': { name: 'Franja recia', color: '#00acc1' },
+      'DF': { name: 'Cinto recio', color: '#fb8c00' },
+      'SD': { name: 'Banda recia', color: '#fdd835' }
+    };
+
+    let userGenders = { 1: '♂', 6: '♂', 10: '♂', 13: '♂' };
+    let cacheEggGroups = {};
+
+    // CARGAR LOS 1025 POKÉMON EN EL DATALIST AL INICIAR
+    async function cargarListaCompletaPokemon() {
+      try {
+        const res = await fetch('https://pokeapi.co/api/v2/pokemon-species?limit=1025');
+        const data = await res.json();
+        const datalist = document.getElementById('pkmn-list');
+        datalist.innerHTML = data.results.map(p => `<option value="${p.name.charAt(0).toUpperCase() + p.name.slice(1)}">`).join('');
+      } catch (e) {
+        console.log("Error cargando la lista de Pokémon:", e);
+      }
+    }
+    cargarListaCompletaPokemon();
+
+    // Crear formulario inicial
+    const container = document.getElementById('inputs-container');
+    for (let i = 1; i <= 6; i++) {
+      container.innerHTML += `
+        <div class="card-input">
+          <label>Pokémon Base ${i}</label>
+          <select id="stat-${i}">
+            ${STATS.map((s, idx) => `<option value="${s.code}" ${idx === i-1 ? 'selected' : ''}>${s.name} (${s.code})</option>`).join('')}
+          </select>
+          <select id="gender-${i}">
+            <option value="♂" ${i <= 3 ? 'selected' : ''}>Macho (♂)</option>
+            <option value="♀" ${i > 3 ? 'selected' : ''}>Hembra (♀)</option>
+          </select>
+        </div>
+      `;
+    }
+
+    function renderBadge(stat) {
+      return `<span class="badge bg-${stat}">${stat}</span>`;
+    }
+
+    function renderFormattedBand(gender, statCode) {
+      const b = BANDS[statCode];
+      const genderClass = gender === '♂' ? 'male-text' : 'female-text';
+      return `<div class="parent-line"><span class="${genderClass}">${gender}:</span>&nbsp;${b.name} (${statCode})<span class="dot-icon" style="background-color: ${b.color};"></span></div>`;
+    }
+
+    function updateStepGender(step, newGender) {
+      userGenders[step] = newGender;
+      generarArbolInteligente();
+    }
+
+    let timerCompat;
+    function debounceCompatibilidad() {
+      clearTimeout(timerCompat);
+      timerCompat = setTimeout(comprobarCompatibilidadAPI, 300);
+    }
+
+    // OBTENER GRUPOS HUEVO E IMAGEN DESDE LA API
+    async function obtenerDatosPokemon(nombre) {
+      const query = nombre.toLowerCase().trim();
+      if (!query) return null;
+      
+      if (cacheEggGroups[query]) return cacheEggGroups[query];
+
+      try {
+        const res = await fetch(`https://pokeapi.co/api/v2/pokemon-species/${query}`);
+        if (!res.ok) return null;
+        const data = await res.json();
+        
+        // Obtener Sprite del Pokémon
+        const resPkmn = await fetch(`https://pokeapi.co/api/v2/pokemon/${data.id}`);
+        let spriteUrl = null;
+        if (resPkmn.ok) {
+          const pkmnData = await resPkmn.json();
+          spriteUrl = pkmnData.sprites.front_default;
+        }
+
+        const info = {
+          grupos: data.egg_groups.map(g => g.name),
+          sprite: spriteUrl
+        };
+
+        cacheEggGroups[query] = info;
+        return info;
+      } catch (e) {
+        return null;
+      }
+    }
+
+    async function comprobarCompatibilidadAPI() {
+      const name1 = document.getElementById('pkmn1').value.trim();
+      const name2 = document.getElementById('pkmn2').value.trim();
+      const resDiv = document.getElementById('compat-result');
+
+      const img1 = document.getElementById('img-pkmn1');
+      const img2 = document.getElementById('img-pkmn2');
+
+      if (!name1 && !name2) {
+        resDiv.innerText = "Ingresa 2 Pokémon para verificar...";
+        resDiv.className = "compat-result";
+        img1.style.display = 'none';
+        img2.style.display = 'none';
+        return;
+      }
+
+      resDiv.innerText = "⏳ Verificando datos e imágenes...";
+      resDiv.className = "compat-result";
+
+      const [p1, p2] = await Promise.all([obtenerDatosPokemon(name1), obtenerDatosPokemon(name2)]);
+
+      // Actualizar Sprites
+      if (p1 && p1.sprite) {
+        img1.src = p1.sprite;
+        img1.style.display = 'block';
+      } else {
+        img1.style.display = 'none';
+      }
+
+      if (p2 && p2.sprite) {
+        img2.src = p2.sprite;
+        img2.style.display = 'block';
+      } else {
+        img2.style.display = 'none';
+      }
+
+      if (!name1 || !name2) {
+        resDiv.innerText = "Ingresa el segundo Pokémon...";
+        return;
+      }
+
+      if (!p1 || !p2) {
+        resDiv.innerText = "⚠️ Revisa los nombres escritos (deben ser válidos).";
+        resDiv.className = "compat-result compat-error";
+        return;
+      }
+
+      const g1 = p1.grupos;
+      const g2 = p2.grupos;
+
+      if (g1.includes("no-eggs") || g2.includes("no-eggs")) {
+        resDiv.innerText = "❌ INCOMPATIBLES (No se pueden criar / Legendario o Bebé)";
+        resDiv.className = "compat-result compat-error";
+        return;
+      }
+
+      if (g1.includes("ditto") || g2.includes("ditto")) {
+        resDiv.innerText = "✅ ¡COMPATIBLES! (Cruza con Ditto)";
+        resDiv.className = "compat-result compat-success";
+        return;
+      }
+
+      const compartidos = g1.filter(g => g2.includes(g));
+
+      if (compartidos.length > 0) {
+        resDiv.innerText = `✅ ¡COMPATIBLES! Grupos: ${compartidos.join(', ').toUpperCase()}`;
+        resDiv.className = "compat-result compat-success";
+      } else {
+        resDiv.innerText = `❌ INCOMPATIBLES (${g1.join('/')} vs ${g2.join('/')})`;
+        resDiv.className = "compat-result compat-error";
+      }
+    }
+
+    function calcularPresupuesto() {
+      const cBreed = parseFloat(document.getElementById('cost-breed').value) || 0;
+      const cBand = parseFloat(document.getElementById('cost-band').value) || 0;
+      const cGender = parseFloat(document.getElementById('cost-gender').value) || 0;
+
+      const totalCruzas = 15;
+      const totalBandasUsadas = 30;
+      const totalSeleccionesGenero = 10; 
+
+      const total = (totalCruzas * cBreed) + (totalBandasUsadas * cBand) + (totalSeleccionesGenero * cGender);
+      
+      document.getElementById('total-price-display').innerText = '$' + total.toLocaleString();
+    }
+
+    function generarArbolInteligente() {
+      const errorBox = document.getElementById('error-box');
+      errorBox.style.display = 'none';
+
+      let pInput = [];
+      for (let i = 1; i <= 6; i++) {
+        pInput.push({
+          stat: document.getElementById(`stat-${i}`).value,
+          gender: document.getElementById(`gender-${i}`).value
+        });
+      }
+
+      let statsUnicos = new Set(pInput.map(x => x.stat));
+      if (statsUnicos.size !== 6) {
+        errorBox.innerText = "⚠️ Debes seleccionar 6 estadísticas de 31 IVs DIFERENTES.";
+        errorBox.style.display = 'block';
+        return;
+      }
+
+      let machos = pInput.filter(x => x.gender === '♂');
+      let hembras = pInput.filter(x => x.gender === '♀');
+
+      if (machos.length !== 3 || hembras.length !== 3) {
+        errorBox.innerText = `⚠️ Necesitas 3 Machos y 3 Hembras. Tienes ${machos.length} Machos y ${hembras.length} Hembras.`;
+        errorBox.style.display = 'block';
+        return;
+      }
+
+      let level1 = [
+        machos[0], hembras[0],
+        machos[1], hembras[1],
+        machos[2], hembras[2]
+      ];
+
+      const tree = document.getElementById('tree-result');
+      tree.innerHTML = '<svg id="svg-connections" class="connections-svg"></svg>';
+
+      let g = {};
+      g[1] = userGenders[1];
+      g[2] = g[1] === '♂' ? '♀' : '♂';
+      g[3] = g[2] === '♂' ? '♀' : '♂';
+      g[4] = g[3] === '♂' ? '♀' : '♂';
+      g[5] = g[4] === '♂' ? '♀' : '♂';
+
+      g[6] = userGenders[6];
+      g[7] = g[6] === '♂' ? '♀' : '♂';
+      g[8] = g[7] === '♂' ? '♀' : '♂';
+      g[9] = g[8] === '♂' ? '♀' : '♂';
+
+      g[10] = userGenders[10];
+      g[11] = g[10] === '♂' ? '♀' : '♂';
+      g[12] = g[11] === '♂' ? '♀' : '♂';
+
+      g[13] = userGenders[13];
+      g[14] = g[13] === '♂' ? '♀' : '♂';
+
+      let htmlL1 = `<div class="level" id="lvl-1">`;
+      for (let i = 0; i < 6; i++) {
+        htmlL1 += `
+          <div class="node" id="node-base-${i+1}">
+            <span class="step-label">Base ${i+1}</span>
+            <div class="stats-container">${renderBadge(level1[i].stat)}</div>
+            <span class="${level1[i].gender === '♂' ? 'male-text' : 'female-text'}">${level1[i].gender}</span>
+            <div class="parents-info">
+              ${renderFormattedBand(level1[i].gender, level1[i].stat)}
+            </div>
+          </div>`;
+      }
+      htmlL1 += `</div>`;
+
+      let c2 = [];
+      for (let i = 0; i < 5; i++) {
+        let p1 = level1[i];
+        let p2 = level1[i+1];
+        let stepNum = i + 1;
+        c2.push({
+          stats: [p1.stat, p2.stat],
+          step: stepNum,
+          p1: { gender: p1.gender, stat: p1.stat },
+          p2: { gender: p2.gender, stat: p2.stat },
+          currentGender: g[stepNum],
+          isSelectable: stepNum === 1
+        });
+      }
+
+      let c3 = [];
+      for (let i = 0; i < 4; i++) {
+        let stepNum = i + 6;
+        c3.push({
+          stats: Array.from(new Set([...c2[i].stats, ...c2[i+1].stats])),
+          step: stepNum,
+          b1: c2[i].stats[0],
+          b2: c2[i+1].stats[1],
+          currentGender: g[stepNum],
+          isSelectable: stepNum === 6
+        });
+      }
+
+      let c4 = [];
+      for (let i = 0; i < 3; i++) {
+        let stepNum = i + 10;
+        c4.push({
+          stats: Array.from(new Set([...c3[i].stats, ...c3[i+1].stats])),
+          step: stepNum,
+          b1: c3[i].stats[0],
+          b2: c3[i+1].stats[c3[i+1].stats.length - 1],
+          currentGender: g[stepNum],
+          isSelectable: stepNum === 10
+        });
+      }
+
+      let c5 = [];
+      for (let i = 0; i < 2; i++) {
+        let stepNum = i + 13;
+        c5.push({
+          stats: Array.from(new Set([...c4[i].stats, ...c4[i+1].stats])),
+          step: stepNum,
+          b1: c4[i].stats[0],
+          b2: c4[i+1].stats[c4[i+1].stats.length - 1],
+          currentGender: g[stepNum],
+          isSelectable: stepNum === 13
+        });
+      }
+
+      function renderLevelBlock(lvlId, arr, renderFn) {
+        return `
+          <div class="level" id="${lvlId}">
+            ${arr.map(renderFn).join('')}
+          </div>`;
+      }
+
+      let htmlC2 = renderLevelBlock("lvl-2", c2, n => `
+        <div class="node" id="node-step-${n.step}">
+          <span class="step-label">Paso ${n.step}</span>
+          <div class="stats-container">${n.stats.map(renderBadge).join('')}</div>
+          <div class="parents-info">
+            ${renderFormattedBand(n.p1.gender, n.p1.stat)}
+            ${renderFormattedBand(n.p2.gender, n.p2.stat)}
+          </div>
+          ${n.isSelectable ? `
+            <select class="gender-selector" onchange="updateStepGender(${n.step}, this.value)">
+              <option value="♂" ${n.currentGender === '♂' ? 'selected' : ''}>Nació Macho (♂)</option>
+              <option value="♀" ${n.currentGender === '♀' ? 'selected' : ''}>Nació Hembra (♀)</option>
+            </select>
+          ` : `<span class="required-badge ${n.currentGender === '♂' ? 'req-male' : 'req-female'}">CRIAR: ${n.currentGender === '♂' ? 'MACHO ♂' : 'HEMBRA ♀'}</span>`}
+        </div>
+      `);
+
+      let htmlC3 = renderLevelBlock("lvl-3", c3, n => `
+        <div class="node" id="node-step-${n.step}">
+          <span class="step-label">Paso ${n.step}</span>
+          <div class="stats-container">${n.stats.map(renderBadge).join('')}</div>
+          <div class="parents-info">
+            ${renderFormattedBand('♂', n.b1)}
+            ${renderFormattedBand('♀', n.b2)}
+          </div>
+          ${n.isSelectable ? `
+            <select class="gender-selector" onchange="updateStepGender(${n.step}, this.value)">
+              <option value="♂" ${n.currentGender === '♂' ? 'selected' : ''}>Nació Macho (♂)</option>
+              <option value="♀" ${n.currentGender === '♀' ? 'selected' : ''}>Nació Hembra (♀)</option>
+            </select>
+          ` : `<span class="required-badge ${n.currentGender === '♂' ? 'req-male' : 'req-female'}">CRIAR: ${n.currentGender === '♂' ? 'MACHO ♂' : 'HEMBRA ♀'}</span>`}
+        </div>
+      `);
+
+      let htmlC4 = renderLevelBlock("lvl-4", c4, n => `
+        <div class="node" id="node-step-${n.step}">
+          <span class="step-label">Paso ${n.step}</span>
+          <div class="stats-container">${n.stats.map(renderBadge).join('')}</div>
+          <div class="parents-info">
+            ${renderFormattedBand('♂', n.b1)}
+            ${renderFormattedBand('♀', n.b2)}
+          </div>
+          ${n.isSelectable ? `
+            <select class="gender-selector" onchange="updateStepGender(${n.step}, this.value)">
+              <option value="♂" ${n.currentGender === '♂' ? 'selected' : ''}>Nació Macho (♂)</option>
+              <option value="♀" ${n.currentGender === '♀' ? 'selected' : ''}>Nació Hembra (♀)</option>
+            </select>
+          ` : `<span class="required-badge ${n.currentGender === '♂' ? 'req-male' : 'req-female'}">CRIAR: ${n.currentGender === '♂' ? 'MACHO ♂' : 'HEMBRA ♀'}</span>`}
+        </div>
+      `);
+
+      let htmlC5 = renderLevelBlock("lvl-5", c5, n => `
+        <div class="node" id="node-step-${n.step}">
+          <span class="step-label">Paso ${n.step}</span>
+          <div class="stats-container">${n.stats.map(renderBadge).join('')}</div>
+          <div class="parents-info">
+            ${renderFormattedBand('♂', n.b1)}
+            ${renderFormattedBand('♀', n.b2)}
+          </div>
+          ${n.isSelectable ? `
+            <select class="gender-selector" onchange="updateStepGender(${n.step}, this.value)">
+              <option value="♂" ${n.currentGender === '♂' ? 'selected' : ''}>Nació Macho (♂)</option>
+              <option value="♀" ${n.currentGender === '♀' ? 'selected' : ''}>Nació Hembra (♀)</option>
+            </select>
+          ` : `<span class="required-badge ${n.currentGender === '♂' ? 'req-male' : 'req-female'}">CRIAR: ${n.currentGender === '♂' ? 'MACHO ♂' : 'HEMBRA ♀'}</span>`}
+        </div>
+      `);
+
+      let htmlFinal = renderLevelBlock("lvl-6", [{ stats: level1.map(x => x.stat), step: 15 }], n => `
+        <div class="node" id="node-step-15" style="min-width:210px;">
+          <span class="step-label">Paso 15</span>
+          <div class="stats-container">${n.stats.map(renderBadge).join('')}</div>
+        </div>
+      `);
+
+      tree.innerHTML += htmlL1 + htmlC2 + htmlC3 + htmlC4 + htmlC5 + htmlFinal;
+
+      setTimeout(dibujarLineasOrtogonales, 50);
+      calcularPresupuesto();
+    }
+
+    // DIBUJO DE LÍNEAS ORTOGONALES
+    function dibujarLineasOrtogonales() {
+      const svg = document.getElementById('svg-connections');
+      const tree = document.getElementById('tree-result');
+      if (!svg || !tree) return;
+
+      svg.innerHTML = '';
+      const treeRect = tree.getBoundingClientRect();
+
+      function connectNodesOrthogonal(idParent1, idParent2, idChild) {
+        const p1 = document.getElementById(idParent1);
+        const p2 = document.getElementById(idParent2);
+        const c = document.getElementById(idChild);
+        if (!p1 || !p2 || !c) return;
+
+        const r1 = p1.getBoundingClientRect();
+        const r2 = p2.getBoundingClientRect();
+        const rc = c.getBoundingClientRect();
+
+        const x1 = (r1.left + r1.right) / 2 - treeRect.left;
+        const y1 = r1.bottom - treeRect.top;
+
+        const x2 = (r2.left + r2.right) / 2 - treeRect.left;
+        const y2 = r2.bottom - treeRect.top;
+
+        const xc = (rc.left + rc.right) / 2 - treeRect.left;
+        const yc = rc.top - treeRect.top;
+
+        const midY = y1 + (yc - y1) / 2;
+
+        const pathData = `
+          M ${x1} ${y1} 
+          V ${midY} 
+          H ${x2} 
+          V ${y2}
+          M ${xc} ${midY} 
+          V ${yc}
+        `;
+
+        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        path.setAttribute('d', pathData);
+        path.setAttribute('stroke', '#555555');
+        path.setAttribute('stroke-width', '2');
+        path.setAttribute('fill', 'none');
+        path.setAttribute('stroke-linejoin', 'round');
+
+        svg.appendChild(path);
+      }
+
+      for(let i=1; i<=5; i++) connectNodesOrthogonal(`node-base-${i}`, `node-base-${i+1}`, `node-step-${i}`);
+      for(let i=0; i<4; i++) connectNodesOrthogonal(`node-step-${i+1}`, `node-step-${i+2}`, `node-step-${i+6}`);
+      for(let i=0; i<3; i++) connectNodesOrthogonal(`node-step-${i+6}`, `node-step-${i+7}`, `node-step-${i+10}`);
+      for(let i=0; i<2; i++) connectNodesOrthogonal(`node-step-${i+10}`, `node-step-${i+11}`, `node-step-${i+13}`);
+      connectNodesOrthogonal(`node-step-13`, `node-step-14`, `node-step-15`);
+    }
+
+    window.addEventListener('resize', dibujarLineasOrtogonales);
+    calcularPresupuesto();
+  </script>
+</body>
+</html>
