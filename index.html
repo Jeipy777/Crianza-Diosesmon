@@ -16,7 +16,7 @@
     .top-header {
       display: flex;
       justify-content: space-between;
-      align-items: stretch; /* PANELES DE LA MISMA ALTURA */
+      align-items: stretch;
       max-width: 1100px;
       margin: 0 auto 25px auto;
       gap: 15px;
@@ -182,8 +182,13 @@
       font-size: 12px;
     }
 
+    .button-group {
+      display: flex;
+      gap: 10px;
+    }
+
     button {
-      width: 100%;
+      flex: 1;
       padding: 12px;
       background: #00e676;
       color: #000;
@@ -196,6 +201,18 @@
     }
     button:hover { background: #00c853; }
 
+    .btn-reset {
+      background: #d32f2f;
+      color: #fff;
+    }
+    .btn-reset:hover { background: #b71c1c; }
+
+    .btn-steps {
+      background: #00bcd4;
+      color: #000;
+    }
+    .btn-steps:hover { background: #00acc1; }
+
     .error-msg {
       background: #d32f2f;
       color: #fff;
@@ -205,6 +222,106 @@
       margin-bottom: 15px;
       display: none;
       font-weight: bold;
+    }
+
+    /* MODAL DE PASO A PASO - MÁS ANCHO Y CON TEXTO VISIBLE */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.8);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+    .modal-card {
+      background: #212529;
+      border: 2px solid #00bcd4;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 680px;
+      padding: 25px;
+      box-sizing: border-box;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.8);
+      text-align: center;
+    }
+    .modal-title {
+      color: #00bcd4;
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .modal-content-box {
+      background: #181a1d;
+      border: 1px solid #444;
+      border-radius: 8px;
+      padding: 24px;
+      margin-bottom: 20px;
+      font-size: 15px;
+      color: #ffffff !important;
+      min-height: 90px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 14px;
+      text-align: center;
+    }
+    .modal-content-box strong {
+      color: #00e676;
+    }
+    .modal-buttons {
+      display: flex;
+      gap: 12px;
+    }
+    .modal-btn {
+      flex: 1;
+      padding: 12px;
+      border-radius: 6px;
+      font-weight: bold;
+      font-size: 14px;
+      cursor: pointer;
+      border: none;
+      transition: 0.2s;
+    }
+    .btn-prev { background: #333; color: #aaa; }
+    .btn-prev:hover:not(:disabled) { background: #444; color: #fff; }
+    .btn-prev:disabled { opacity: 0.4; cursor: not-allowed; }
+    .btn-next { background: #00bcd4; color: #000; }
+    .btn-next:hover { background: #00acc1; }
+    .modal-close-x {
+      float: right;
+      background: none;
+      border: none;
+      color: #aaa;
+      font-size: 20px;
+      cursor: pointer;
+      padding: 0;
+      margin-top: -10px;
+    }
+    .modal-close-x:hover { color: #fff; }
+
+    /* ESTILOS DE RADIO BUTTONS EN MODAL */
+    .radio-group-modal {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      margin-top: 5px;
+    }
+    .radio-group-modal label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      color: #fff;
+    }
+    .radio-group-modal input[type="radio"] {
+      accent-color: #00bcd4;
+      width: 16px;
+      height: 16px;
     }
 
     /* ESTRUCTURA DEL ÁRBOL */
@@ -242,6 +359,26 @@
       box-sizing: border-box;
     }
 
+    .node.completed {
+      background: #122818;
+      border-color: #00e676;
+      opacity: 0.75;
+    }
+    .node.completed .step-label,
+    .node.completed .parents-info {
+      color: #81c784;
+    }
+
+    .node-check {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+      accent-color: #00e676;
+    }
+
     .stats-container { 
       display: flex; 
       gap: 3px; 
@@ -250,7 +387,6 @@
       width: 100%;
     }
     
-    /* MODIFICADO: Letras dentro de los cuadraditos en #181818 */
     .badge {
       padding: 3px 5px;
       border-radius: 4px;
@@ -318,7 +454,6 @@
     .req-male { background: #0d47a1; color: #82b1ff; border: 1px solid #1565c0; }
     .req-female { background: #880e4f; color: #ff80ab; border: 1px solid #ad1457; }
 
-    /* COLORES POR STAT (SA actualizado a #dd5ed9) */
     .bg-AT { background-color: #e53935; }
     .bg-SA { background-color: #dd5ed9; }
     .bg-PS { background-color: #4caf50; }
@@ -326,9 +461,8 @@
     .bg-DF { background-color: #fb8c00; }
     .bg-SD { background-color: #fdd835; }
 
-    .step-label { font-size: 11px; color: #aaa; font-weight: bold; }
+    .step-label { font-size: 11px; color: #aaa; font-weight: bold; display: flex; align-items: center; gap: 4px; padding-right: 18px; }
 
-    /* SVG PARA LÍNEAS ORTOGONALES */
     .connections-svg {
       position: absolute;
       top: 0;
@@ -348,7 +482,7 @@
       <p class="subtitle">Calculadora técnica, visual y financiera para crianza perfecta de 6 IVs</p>
     </div>
 
-    <!-- COMPROBADOR DE COMPATIBILIDAD CON POKEAPI E IMÁGENES -->
+    <!-- COMPROBADOR DE COMPATIBILIDAD CON IMÁGENES -->
     <div class="top-panel">
       <h3>🔍 Comprobador de Compatibilidad</h3>
       <div class="compat-container">
@@ -367,7 +501,7 @@
       </div>
     </div>
 
-    <!-- PANEL ECONÓMICO (Modificado: Costo por Género:) -->
+    <!-- PANEL ECONÓMICO -->
     <div class="top-panel">
       <h3>💰 Presupuesto de Crianza</h3>
       <div class="econ-grid">
@@ -390,11 +524,30 @@
   <div class="panel-config">
     <div id="error-box" class="error-msg"></div>
     <div class="grid-inputs" id="inputs-container"></div>
-    <button onclick="generarArbolInteligente()">¡ORGANIZAR GÉNEROS Y GENERAR ÁRBOL!</button>
+    <div class="button-group">
+      <button onclick="generarArbolInteligente()">GENERAR ESQUEMA</button>
+      <button class="btn-steps" onclick="abrirModalPasos()">GENERAR PASOS</button>
+      <button class="btn-reset" onclick="resetearChecks()">RESET CHECKS</button>
+    </div>
   </div>
 
   <div class="tree-container" id="tree-result">
     <svg id="svg-connections" class="connections-svg"></svg>
+  </div>
+
+  <!-- MODAL DE PASO A PASO INTERACTIVO -->
+  <div id="steps-modal" class="modal-overlay">
+    <div class="modal-card">
+      <button class="modal-close-x" onclick="cerrarModalPasos()">&times;</button>
+      <div id="modal-step-title" class="modal-title">PASO 1 de 17</div>
+      <div id="modal-content-box" class="modal-content-box">
+        <!-- Contenido dinámico unificado del paso -->
+      </div>
+      <div class="modal-buttons">
+        <button id="modal-btn-prev" class="modal-btn btn-prev" onclick="cambiarPasoModal(-1)">ANTERIOR</button>
+        <button id="modal-btn-next" class="modal-btn btn-next" onclick="cambiarPasoModal(1)">SIGUIENTE</button>
+      </div>
+    </div>
   </div>
 
   <script>
@@ -416,10 +569,11 @@
       'SD': { name: 'Banda recia', color: '#fdd835' }
     };
 
-    let userGenders = { 1: '♂', 6: '♂', 10: '♂', 13: '♂' };
+    let userGenders = { 7: '♂', 12: '♂', 16: '♂', 19: '♂' };
+    let completedNodes = {}; 
     let cacheEggGroups = {};
+    let currentModalStep = 1;
 
-    // CARGAR LOS 1025 POKÉMON EN EL DATALIST AL INICIAR
     async function cargarListaCompletaPokemon() {
       try {
         const res = await fetch('https://pokeapi.co/api/v2/pokemon-species?limit=1025');
@@ -432,7 +586,6 @@
     }
     cargarListaCompletaPokemon();
 
-    // Crear formulario inicial
     const container = document.getElementById('inputs-container');
     for (let i = 1; i <= 6; i++) {
       container.innerHTML += `
@@ -453,15 +606,32 @@
       return `<span class="badge bg-${stat}">${stat}</span>`;
     }
 
-    function renderFormattedBand(gender, statCode) {
+    function renderParentLine(parentNum, statCode) {
       const b = BANDS[statCode];
-      const genderClass = gender === '♂' ? 'male-text' : 'female-text';
-      return `<div class="parent-line"><span class="${genderClass}">${gender}:</span>&nbsp;${b.name} (${statCode})<span class="dot-icon" style="background-color: ${b.color};"></span></div>`;
+      return `<div class="parent-line">P${parentNum}:&nbsp;${b.name} (${statCode})<span class="dot-icon" style="background-color: ${b.color};"></span></div>`;
     }
 
     function updateStepGender(step, newGender) {
       userGenders[step] = newGender;
       generarArbolInteligente();
+    }
+
+    function toggleNodeComplete(checkbox, nodeId) {
+      completedNodes[nodeId] = checkbox.checked;
+      const nodeElement = document.getElementById(nodeId);
+      if (checkbox.checked) {
+        nodeElement.classList.add('completed');
+      } else {
+        nodeElement.classList.remove('completed');
+      }
+    }
+
+    function resetearChecks() {
+      completedNodes = {};
+      const checkboxes = document.querySelectorAll('.node-check');
+      checkboxes.forEach(cb => cb.checked = false);
+      const nodes = document.querySelectorAll('.node');
+      nodes.forEach(n => n.classList.remove('completed'));
     }
 
     let timerCompat;
@@ -470,11 +640,9 @@
       timerCompat = setTimeout(comprobarCompatibilidadAPI, 300);
     }
 
-    // OBTENER GRUPOS HUEVO E IMAGEN DESDE LA API
     async function obtenerDatosPokemon(nombre) {
       const query = nombre.toLowerCase().trim();
       if (!query) return null;
-      
       if (cacheEggGroups[query]) return cacheEggGroups[query];
 
       try {
@@ -482,7 +650,6 @@
         if (!res.ok) return null;
         const data = await res.json();
         
-        // Obtener Sprite del Pokémon
         const resPkmn = await fetch(`https://pokeapi.co/api/v2/pokemon/${data.id}`);
         let spriteUrl = null;
         if (resPkmn.ok) {
@@ -506,7 +673,6 @@
       const name1 = document.getElementById('pkmn1').value.trim();
       const name2 = document.getElementById('pkmn2').value.trim();
       const resDiv = document.getElementById('compat-result');
-
       const img1 = document.getElementById('img-pkmn1');
       const img2 = document.getElementById('img-pkmn2');
 
@@ -523,7 +689,6 @@
 
       const [p1, p2] = await Promise.all([obtenerDatosPokemon(name1), obtenerDatosPokemon(name2)]);
 
-      // Actualizar Sprites
       if (p1 && p1.sprite) {
         img1.src = p1.sprite;
         img1.style.display = 'block';
@@ -585,9 +750,10 @@
       const totalSeleccionesGenero = 10; 
 
       const total = (totalCruzas * cBreed) + (totalBandasUsadas * cBand) + (totalSeleccionesGenero * cGender);
-      
       document.getElementById('total-price-display').innerText = '$' + total.toLocaleString();
     }
+
+    let treeStepsData = [];
 
     function generarArbolInteligente() {
       const errorBox = document.getElementById('error-box');
@@ -627,33 +793,36 @@
       tree.innerHTML = '<svg id="svg-connections" class="connections-svg"></svg>';
 
       let g = {};
-      g[1] = userGenders[1];
-      g[2] = g[1] === '♂' ? '♀' : '♂';
-      g[3] = g[2] === '♂' ? '♀' : '♂';
-      g[4] = g[3] === '♂' ? '♀' : '♂';
-      g[5] = g[4] === '♂' ? '♀' : '♂';
-
-      g[6] = userGenders[6];
-      g[7] = g[6] === '♂' ? '♀' : '♂';
+      g[7] = userGenders[7];
       g[8] = g[7] === '♂' ? '♀' : '♂';
       g[9] = g[8] === '♂' ? '♀' : '♂';
-
-      g[10] = userGenders[10];
+      g[10] = g[9] === '♂' ? '♀' : '♂';
       g[11] = g[10] === '♂' ? '♀' : '♂';
-      g[12] = g[11] === '♂' ? '♀' : '♂';
 
-      g[13] = userGenders[13];
+      g[12] = userGenders[12];
+      g[13] = g[12] === '♂' ? '♀' : '♂';
       g[14] = g[13] === '♂' ? '♀' : '♂';
+      g[15] = g[14] === '♂' ? '♀' : '♂';
+
+      g[16] = userGenders[16];
+      g[17] = g[16] === '♂' ? '♀' : '♂';
+      g[18] = g[17] === '♂' ? '♀' : '♂';
+
+      g[19] = userGenders[19];
+      g[20] = g[19] === '♂' ? '♀' : '♂';
+      g[21] = g[20] === '♂' ? '♀' : '♂';
 
       let htmlL1 = `<div class="level" id="lvl-1">`;
       for (let i = 0; i < 6; i++) {
+        let pkNum = i + 1;
+        let genderClass = level1[i].gender === '♂' ? 'male-text' : 'female-text';
         htmlL1 += `
-          <div class="node" id="node-base-${i+1}">
-            <span class="step-label">Base ${i+1}</span>
+          <div class="node" id="node-base-${pkNum}">
+            <input type="checkbox" class="node-check" title="Marcar como hecho" onclick="toggleNodeComplete(this, 'node-base-${pkNum}')">
+            <span class="step-label">Pokémon ${pkNum} <span class="${genderClass}">${level1[i].gender}</span></span>
             <div class="stats-container">${renderBadge(level1[i].stat)}</div>
-            <span class="${level1[i].gender === '♂' ? 'male-text' : 'female-text'}">${level1[i].gender}</span>
             <div class="parents-info">
-              ${renderFormattedBand(level1[i].gender, level1[i].stat)}
+              ${renderParentLine(pkNum, level1[i].stat)}
             </div>
           </div>`;
       }
@@ -661,147 +830,466 @@
 
       let c2 = [];
       for (let i = 0; i < 5; i++) {
+        let p1Index = i + 1;
+        let p2Index = i + 2;
+        let pkNum = i + 7; 
         let p1 = level1[i];
         let p2 = level1[i+1];
-        let stepNum = i + 1;
         c2.push({
           stats: [p1.stat, p2.stat],
-          step: stepNum,
-          p1: { gender: p1.gender, stat: p1.stat },
-          p2: { gender: p2.gender, stat: p2.stat },
-          currentGender: g[stepNum],
-          isSelectable: stepNum === 1
+          step: pkNum,
+          p1Index: p1Index,
+          p2Index: p2Index,
+          p1Stat: p1.stat,
+          p2Stat: p2.stat,
+          currentGender: g[pkNum],
+          isSelectable: pkNum === 7
         });
       }
 
       let c3 = [];
       for (let i = 0; i < 4; i++) {
-        let stepNum = i + 6;
+        let pkNum = i + 12; 
+        let p1Index = i + 7;
+        let p2Index = i + 8;
         c3.push({
           stats: Array.from(new Set([...c2[i].stats, ...c2[i+1].stats])),
-          step: stepNum,
+          step: pkNum,
+          p1Index: p1Index,
+          p2Index: p2Index,
           b1: c2[i].stats[0],
           b2: c2[i+1].stats[1],
-          currentGender: g[stepNum],
-          isSelectable: stepNum === 6
+          currentGender: g[pkNum],
+          isSelectable: pkNum === 12
         });
       }
 
       let c4 = [];
       for (let i = 0; i < 3; i++) {
-        let stepNum = i + 10;
+        let pkNum = i + 16; 
+        let p1Index = i + 12;
+        let p2Index = i + 13;
         c4.push({
           stats: Array.from(new Set([...c3[i].stats, ...c3[i+1].stats])),
-          step: stepNum,
+          step: pkNum,
+          p1Index: p1Index,
+          p2Index: p2Index,
           b1: c3[i].stats[0],
           b2: c3[i+1].stats[c3[i+1].stats.length - 1],
-          currentGender: g[stepNum],
-          isSelectable: stepNum === 10
+          currentGender: g[pkNum],
+          isSelectable: pkNum === 16
         });
       }
 
       let c5 = [];
       for (let i = 0; i < 2; i++) {
-        let stepNum = i + 13;
+        let pkNum = i + 19; 
+        let p1Index = i + 16;
+        let p2Index = i + 17;
         c5.push({
           stats: Array.from(new Set([...c4[i].stats, ...c4[i+1].stats])),
-          step: stepNum,
+          step: pkNum,
+          p1Index: p1Index,
+          p2Index: p2Index,
           b1: c4[i].stats[0],
           b2: c4[i+1].stats[c4[i+1].stats.length - 1],
-          currentGender: g[stepNum],
-          isSelectable: stepNum === 13
+          currentGender: g[pkNum],
+          isSelectable: pkNum === 19
         });
       }
 
+      let finalPk = [{
+        stats: level1.map(x => x.stat),
+        step: 21,
+        p1Index: 19,
+        p2Index: 20,
+        b1: c5[0].stats[0],
+        b2: c5[1].stats[c5[1].stats.length - 1],
+        currentGender: g[21]
+      }];
+
+      treeStepsData = [];
+      
+      // PASO 1 (Cruza base 1 y 2 - modificado sin la línea de la cría)
+      let n7 = c2[0];
+      let b1Obj7 = BANDS[n7.p1Stat];
+      let b2Obj7 = BANDS[n7.p2Stat];
+      
+      treeStepsData.push({
+        type: 'unified_static',
+        stepNumber: 1,
+        text: `Cruzar Pokémon ${n7.p1Index} (${b1Obj7.name} <span class="dot-icon" style="background-color: ${b1Obj7.color};"></span>) con Pokémon ${n7.p2Index} (${b2Obj7.name} <span class="dot-icon" style="background-color: ${b2Obj7.color};"></span>).`
+      });
+
+      // PASO 2 (Selección de género del Pokémon 7)
+      treeStepsData.push({
+        type: 'unified_interactive',
+        stepNumber: 2,
+        targetNode: 7,
+        text: `Selecciona el género obtenido para nombrarlo Pokémon 7:`
+      });
+
+      // Resto de pasos (del 3 en adelante)
+      let modalStepCounter = 3;
+      const allCrossNodes = [...c2, ...c3, ...c4, ...c5, ...finalPk];
+      
+      allCrossNodes.forEach((node, index) => {
+        if (index === 0) return; // Ya procesamos c2[0] en los pasos 1 y 2
+
+        let b1Obj = BANDS[node.p1Stat || node.b1];
+        let b2Obj = BANDS[node.p2Stat || node.b2];
+        let targetGenderName = node.currentGender === '♂' ? 'MACHO (♂)' : 'HEMBRA (♀)';
+
+        if (node.step === 21) {
+          // El cruce final (Pokémon 19 y 20) según requerimiento específico (con puntos de color y sin la línea extra)
+          let b1Final = BANDS['AT'];
+          let b2Final = BANDS['SD'];
+          treeStepsData.push({
+            type: 'unified_static',
+            stepNumber: modalStepCounter,
+            text: `Cruzar Pokémon 19 (${b1Final.name} <span class="dot-icon" style="background-color: ${b1Final.color};"></span>) con Pokémon 20 (${b2Final.name} <span class="dot-icon" style="background-color: ${b2Final.color};"></span>).`
+          });
+        } else {
+          let isInteractive = (node.step === 12 || node.step === 16 || node.step === 19);
+          if (isInteractive) {
+            treeStepsData.push({
+              type: 'unified_static',
+              stepNumber: modalStepCounter,
+              text: `Cruzar Pokémon ${node.p1Index} (${b1Obj.name} <span class="dot-icon" style="background-color: ${b1Obj.color};"></span>) con Pokémon ${node.p2Index} (${b2Obj.name} <span class="dot-icon" style="background-color: ${b2Obj.color};"></span>).<br>Chequear que nazca <strong>${targetGenderName}</strong> y nombrarlo Pokémon ${node.step}.`
+            });
+            modalStepCounter++;
+            treeStepsData.push({
+              type: 'unified_interactive',
+              stepNumber: modalStepCounter,
+              targetNode: node.step,
+              text: `Selecciona el género obtenido para nombrarlo Pokémon ${node.step}:`
+            });
+          } else {
+            treeStepsData.push({
+              type: 'unified_static',
+              stepNumber: modalStepCounter,
+              text: `Cruzar Pokémon ${node.p1Index} (${b1Obj.name} <span class="dot-icon" style="background-color: ${b1Obj.color};"></span>) con Pokémon ${node.p2Index} (${b2Obj.name} <span class="dot-icon" style="background-color: ${b2Obj.color};"></span>).<br>Chequear que nazca <strong>${targetGenderName}</strong> y nombrarlo Pokémon ${node.step}.`
+            });
+          }
+        }
+        modalStepCounter++;
+      });
+
+      // Último paso añadido de felicitaciones
+      treeStepsData.push({
+        type: 'unified_static',
+        stepNumber: modalStepCounter,
+        text: `🎉 ¡Felicitaciones! Haz obtenido tu pokémon perfecto (6x31).`
+      });
+
       function renderLevelBlock(lvlId, arr, renderFn) {
-        return `
-          <div class="level" id="${lvlId}">
-            ${arr.map(renderFn).join('')}
-          </div>`;
+        return `<div class="level" id="${lvlId}">${arr.map(renderFn).join('')}</div>`;
       }
 
-      let htmlC2 = renderLevelBlock("lvl-2", c2, n => `
-        <div class="node" id="node-step-${n.step}">
-          <span class="step-label">Paso ${n.step}</span>
-          <div class="stats-container">${n.stats.map(renderBadge).join('')}</div>
-          <div class="parents-info">
-            ${renderFormattedBand(n.p1.gender, n.p1.stat)}
-            ${renderFormattedBand(n.p2.gender, n.p2.stat)}
+      let htmlC2 = renderLevelBlock("lvl-2", c2, n => {
+        let genderClass = n.currentGender === '♂' ? 'male-text' : 'female-text';
+        return `
+          <div class="node" id="node-step-${n.step}">
+            <input type="checkbox" class="node-check" title="Marcar como hecho" onclick="toggleNodeComplete(this, 'node-step-${n.step}')">
+            <span class="step-label">Pokémon ${n.step} <span class="${genderClass}">${n.currentGender}</span></span>
+            <div class="stats-container">${n.stats.map(renderBadge).join('')}</div>
+            <div class="parents-info">
+              ${renderParentLine(n.p1Index, n.p1Stat)}
+              ${renderParentLine(n.p2Index, n.p2Stat)}
+            </div>
+            ${n.isSelectable ? `
+              <select class="gender-selector" onchange="updateStepGender(${n.step}, this.value)">
+                <option value="♂" ${n.currentGender === '♂' ? 'selected' : ''}>Nació Macho (♂)</option>
+                <option value="♀" ${n.currentGender === '♀' ? 'selected' : ''}>Nació Hembra (♀)</option>
+              </select>
+            ` : `<span class="required-badge ${n.currentGender === '♂' ? 'req-male' : 'req-female'}">CRIAR: ${n.currentGender === '♂' ? 'MACHO ♂' : 'HEMBRA ♀'}</span>`}
           </div>
-          ${n.isSelectable ? `
-            <select class="gender-selector" onchange="updateStepGender(${n.step}, this.value)">
-              <option value="♂" ${n.currentGender === '♂' ? 'selected' : ''}>Nació Macho (♂)</option>
-              <option value="♀" ${n.currentGender === '♀' ? 'selected' : ''}>Nació Hembra (♀)</option>
-            </select>
-          ` : `<span class="required-badge ${n.currentGender === '♂' ? 'req-male' : 'req-female'}">CRIAR: ${n.currentGender === '♂' ? 'MACHO ♂' : 'HEMBRA ♀'}</span>`}
-        </div>
-      `);
+        `;
+      });
 
-      let htmlC3 = renderLevelBlock("lvl-3", c3, n => `
-        <div class="node" id="node-step-${n.step}">
-          <span class="step-label">Paso ${n.step}</span>
-          <div class="stats-container">${n.stats.map(renderBadge).join('')}</div>
-          <div class="parents-info">
-            ${renderFormattedBand('♂', n.b1)}
-            ${renderFormattedBand('♀', n.b2)}
+      let htmlC3 = renderLevelBlock("lvl-3", c3, n => {
+        let genderClass = n.currentGender === '♂' ? 'male-text' : 'female-text';
+        return `
+          <div class="node" id="node-step-${n.step}">
+            <input type="checkbox" class="node-check" title="Marcar como hecho" onclick="toggleNodeComplete(this, 'node-step-${n.step}')">
+            <span class="step-label">Pokémon ${n.step} <span class="${genderClass}">${n.currentGender}</span></span>
+            <div class="stats-container">${n.stats.map(renderBadge).join('')}</div>
+            <div class="parents-info">
+              ${renderParentLine(n.p1Index, n.b1)}
+              ${renderParentLine(n.p2Index, n.b2)}
+            </div>
+            ${n.isSelectable ? `
+              <select class="gender-selector" onchange="updateStepGender(${n.step}, this.value)">
+                <option value="♂" ${n.currentGender === '♂' ? 'selected' : ''}>Nació Macho (♂)</option>
+                <option value="♀" ${n.currentGender === '♀' ? 'selected' : ''}>Nació Hembra (♀)</option>
+              </select>
+            ` : `<span class="required-badge ${n.currentGender === '♂' ? 'req-male' : 'req-female'}">CRIAR: ${n.currentGender === '♂' ? 'MACHO ♂' : 'HEMBRA ♀'}</span>`}
           </div>
-          ${n.isSelectable ? `
-            <select class="gender-selector" onchange="updateStepGender(${n.step}, this.value)">
-              <option value="♂" ${n.currentGender === '♂' ? 'selected' : ''}>Nació Macho (♂)</option>
-              <option value="♀" ${n.currentGender === '♀' ? 'selected' : ''}>Nació Hembra (♀)</option>
-            </select>
-          ` : `<span class="required-badge ${n.currentGender === '♂' ? 'req-male' : 'req-female'}">CRIAR: ${n.currentGender === '♂' ? 'MACHO ♂' : 'HEMBRA ♀'}</span>`}
-        </div>
-      `);
+        `;
+      });
 
-      let htmlC4 = renderLevelBlock("lvl-4", c4, n => `
-        <div class="node" id="node-step-${n.step}">
-          <span class="step-label">Paso ${n.step}</span>
-          <div class="stats-container">${n.stats.map(renderBadge).join('')}</div>
-          <div class="parents-info">
-            ${renderFormattedBand('♂', n.b1)}
-            ${renderFormattedBand('♀', n.b2)}
+      let htmlC4 = renderLevelBlock("lvl-4", c4, n => {
+        let genderClass = n.currentGender === '♂' ? 'male-text' : 'female-text';
+        return `
+          <div class="node" id="node-step-${n.step}">
+            <input type="checkbox" class="node-check" title="Marcar como hecho" onclick="toggleNodeComplete(this, 'node-step-${n.step}')">
+            <span class="step-label">Pokémon ${n.step} <span class="${genderClass}">${n.currentGender}</span></span>
+            <div class="stats-container">${n.stats.map(renderBadge).join('')}</div>
+            <div class="parents-info">
+              ${renderParentLine(n.p1Index, n.b1)}
+              ${renderParentLine(n.p2Index, n.b2)}
+            </div>
+            ${n.isSelectable ? `
+              <select class="gender-selector" onchange="updateStepGender(${n.step}, this.value)">
+                <option value="♂" ${n.currentGender === '♂' ? 'selected' : ''}>Nació Macho (♂)</option>
+                <option value="♀" ${n.currentGender === '♀' ? 'selected' : ''}>Nació Hembra (♀)</option>
+              </select>
+            ` : `<span class="required-badge ${n.currentGender === '♂' ? 'req-male' : 'req-female'}">CRIAR: ${n.currentGender === '♂' ? 'MACHO ♂' : 'HEMBRA ♀'}</span>`}
           </div>
-          ${n.isSelectable ? `
-            <select class="gender-selector" onchange="updateStepGender(${n.step}, this.value)">
-              <option value="♂" ${n.currentGender === '♂' ? 'selected' : ''}>Nació Macho (♂)</option>
-              <option value="♀" ${n.currentGender === '♀' ? 'selected' : ''}>Nació Hembra (♀)</option>
-            </select>
-          ` : `<span class="required-badge ${n.currentGender === '♂' ? 'req-male' : 'req-female'}">CRIAR: ${n.currentGender === '♂' ? 'MACHO ♂' : 'HEMBRA ♀'}</span>`}
-        </div>
-      `);
+        `;
+      });
 
-      let htmlC5 = renderLevelBlock("lvl-5", c5, n => `
-        <div class="node" id="node-step-${n.step}">
-          <span class="step-label">Paso ${n.step}</span>
-          <div class="stats-container">${n.stats.map(renderBadge).join('')}</div>
-          <div class="parents-info">
-            ${renderFormattedBand('♂', n.b1)}
-            ${renderFormattedBand('♀', n.b2)}
+      let htmlC5 = renderLevelBlock("lvl-5", c5, n => {
+        let genderClass = n.currentGender === '♂' ? 'male-text' : 'female-text';
+        return `
+          <div class="node" id="node-step-${n.step}">
+            <input type="checkbox" class="node-check" title="Marcar como hecho" onclick="toggleNodeComplete(this, 'node-step-${n.step}')">
+            <span class="step-label">Pokémon ${n.step} <span class="${genderClass}">${n.currentGender}</span></span>
+            <div class="stats-container">${n.stats.map(renderBadge).join('')}</div>
+            <div class="parents-info">
+              ${renderParentLine(n.p1Index, n.b1)}
+              ${renderParentLine(n.p2Index, n.b2)}
+            </div>
+            ${n.isSelectable ? `
+              <select class="gender-selector" onchange="updateStepGender(${n.step}, this.value)">
+                <option value="♂" ${n.currentGender === '♂' ? 'selected' : ''}>Nació Macho (♂)</option>
+                <option value="♀" ${n.currentGender === '♀' ? 'selected' : ''}>Nació Hembra (♀)</option>
+              </select>
+            ` : `<span class="required-badge ${n.currentGender === '♂' ? 'req-male' : 'req-female'}">CRIAR: ${n.currentGender === '♂' ? 'MACHO ♂' : 'HEMBRA ♀'}</span>`}
           </div>
-          ${n.isSelectable ? `
-            <select class="gender-selector" onchange="updateStepGender(${n.step}, this.value)">
-              <option value="♂" ${n.currentGender === '♂' ? 'selected' : ''}>Nació Macho (♂)</option>
-              <option value="♀" ${n.currentGender === '♀' ? 'selected' : ''}>Nació Hembra (♀)</option>
-            </select>
-          ` : `<span class="required-badge ${n.currentGender === '♂' ? 'req-male' : 'req-female'}">CRIAR: ${n.currentGender === '♂' ? 'MACHO ♂' : 'HEMBRA ♀'}</span>`}
-        </div>
-      `);
+        `;
+      });
 
-      let htmlFinal = renderLevelBlock("lvl-6", [{ stats: level1.map(x => x.stat), step: 15 }], n => `
-        <div class="node" id="node-step-15" style="min-width:210px;">
-          <span class="step-label">Paso 15</span>
-          <div class="stats-container">${n.stats.map(renderBadge).join('')}</div>
-        </div>
-      `);
+      let htmlFinal = renderLevelBlock("lvl-6", finalPk, n => {
+        let genderClass = n.currentGender === '♂' ? 'male-text' : 'female-text';
+        return `
+          <div class="node" id="node-step-${n.step}" style="min-width:230px;">
+            <input type="checkbox" class="node-check" title="Marcar como hecho" onclick="toggleNodeComplete(this, 'node-step-${n.step}')">
+            <span class="step-label">Pokémon ${n.step}: Perfecto (6x31) <span class="${genderClass}">${n.currentGender}</span></span>
+            <div class="stats-container">${n.stats.map(renderBadge).join('')}</div>
+            <div class="parents-info">
+              ${renderParentLine(n.p1Index, n.b1)}
+              ${renderParentLine(n.p2Index, n.b2)}
+            </div>
+          </div>
+        `;
+      });
 
       tree.innerHTML += htmlL1 + htmlC2 + htmlC3 + htmlC4 + htmlC5 + htmlFinal;
+
+      for (const nodeId in completedNodes) {
+        if (completedNodes[nodeId]) {
+          const nodeEl = document.getElementById(nodeId);
+          if (nodeEl) {
+            nodeEl.classList.add('completed');
+            const chk = nodeEl.querySelector('.node-check');
+            if (chk) chk.checked = true;
+          }
+        }
+      }
 
       setTimeout(dibujarLineasOrtogonales, 50);
       calcularPresupuesto();
     }
 
-    // DIBUJO DE LÍNEAS ORTOGONALES
+    function abrirModalPasos() {
+      generarArbolInteligenteSilencioso();
+      if (treeStepsData.length === 0) return;
+      currentModalStep = 1;
+      document.getElementById('steps-modal').style.display = 'flex';
+      renderizarPasoModal();
+    }
+
+    function cerrarModalPasos() {
+      document.getElementById('steps-modal').style.display = 'none';
+    }
+
+    function cambiarPasoModal(dir) {
+      if (currentModalStep === treeStepsData.length && dir > 0) {
+        cerrarModalPasos();
+        return;
+      }
+      currentModalStep += dir;
+      if (currentModalStep < 1) currentModalStep = 1;
+      if (currentModalStep > treeStepsData.length) currentModalStep = treeStepsData.length;
+      renderizarPasoModal();
+    }
+
+    function renderizarPasoModal() {
+      const stepObj = treeStepsData[currentModalStep - 1];
+      document.getElementById('modal-step-title').innerText = `PASO ${currentModalStep} de ${treeStepsData.length}`;
+      
+      const contentBox = document.getElementById('modal-content-box');
+      
+      if (stepObj.type === 'unified_interactive') {
+        let currentG = userGenders[stepObj.targetNode] || '♂';
+        contentBox.innerHTML = `
+          <div>${stepObj.text}</div>
+          <div class="radio-group-modal">
+            <label><input type="radio" name="modal-gender-${stepObj.targetNode}" value="♂" ${currentG === '♂' ? 'checked' : ''} onchange="actualizarGeneroModal(${stepObj.targetNode}, '♂')"> MACHO (♂)</label>
+            <label><input type="radio" name="modal-gender-${stepObj.targetNode}" value="♀" ${currentG === '♀' ? 'checked' : ''} onchange="actualizarGeneroModal(${stepObj.targetNode}, '♀')"> HEMBRA (♀)</label>
+          </div>
+        `;
+      } else {
+        contentBox.innerHTML = `<div>${stepObj.text}</div>`;
+      }
+
+      document.getElementById('modal-btn-prev').disabled = (currentModalStep === 1);
+      const nextBtn = document.getElementById('modal-btn-next');
+      if (currentModalStep === treeStepsData.length) {
+        nextBtn.innerText = "FINALIZAR";
+      } else {
+        nextBtn.innerText = "SIGUIENTE";
+      }
+    }
+
+    function actualizarGeneroModal(stepNum, newGender) {
+      userGenders[stepNum] = newGender;
+      generarArbolInteligenteSilencioso();
+      renderizarPasoModal();
+    }
+
+    function generarArbolInteligenteSilencioso() {
+      let pInput = [];
+      for (let i = 1; i <= 6; i++) {
+        pInput.push({
+          stat: document.getElementById(`stat-${i}`).value,
+          gender: document.getElementById(`gender-${i}`).value
+        });
+      }
+
+      let machos = pInput.filter(x => x.gender === '♂');
+      let hembras = pInput.filter(x => x.gender === '♀');
+      if (machos.length !== 3 || hembras.length !== 3) return;
+
+      let level1 = [machos[0], hembras[0], machos[1], hembras[1], machos[2], hembras[2]];
+
+      let g = {};
+      g[7] = userGenders[7];
+      g[8] = g[7] === '♂' ? '♀' : '♂';
+      g[9] = g[8] === '♂' ? '♀' : '♂';
+      g[10] = g[9] === '♂' ? '♀' : '♂';
+      g[11] = g[10] === '♂' ? '♀' : '♂';
+
+      g[12] = userGenders[12];
+      g[13] = g[12] === '♂' ? '♀' : '♂';
+      g[14] = g[13] === '♂' ? '♀' : '♂';
+      g[15] = g[14] === '♂' ? '♀' : '♂';
+
+      g[16] = userGenders[16];
+      g[17] = g[16] === '♂' ? '♀' : '♂';
+      g[18] = g[17] === '♂' ? '♀' : '♂';
+
+      g[19] = userGenders[19];
+      g[20] = g[19] === '♂' ? '♀' : '♂';
+      g[21] = g[20] === '♂' ? '♀' : '♂';
+
+      let c2 = [];
+      for (let i = 0; i < 5; i++) {
+        let pkNum = i + 7;
+        c2.push({ stats: [level1[i].stat, level1[i+1].stat], step: pkNum, p1Index: i+1, p2Index: i+2, p1Stat: level1[i].stat, p2Stat: level1[i+1].stat, currentGender: g[pkNum], isSelectable: pkNum === 7 });
+      }
+
+      let c3 = [];
+      for (let i = 0; i < 4; i++) {
+        let pkNum = i + 12;
+        c3.push({ stats: Array.from(new Set([...c2[i].stats, ...c2[i+1].stats])), step: pkNum, p1Index: i+7, p2Index: i+8, b1: c2[i].stats[0], b2: c2[i+1].stats[1], currentGender: g[pkNum], isSelectable: pkNum === 12 });
+      }
+
+      let c4 = [];
+      for (let i = 0; i < 3; i++) {
+        let pkNum = i + 16;
+        c4.push({ stats: Array.from(new Set([...c3[i].stats, ...c3[i+1].stats])), step: pkNum, p1Index: i+12, p2Index: i+13, b1: c3[i].stats[0], b2: c3[i+1].stats[c3[i+1].stats.length - 1], currentGender: g[pkNum], isSelectable: pkNum === 16 });
+      }
+
+      let c5 = [];
+      for (let i = 0; i < 2; i++) {
+        let pkNum = i + 19;
+        c5.push({ stats: Array.from(new Set([...c4[i].stats, ...c4[i+1].stats])), step: pkNum, p1Index: i+16, p2Index: i+17, b1: c4[i].stats[0], b2: c4[i+1].stats[c4[i+1].stats.length - 1], currentGender: g[pkNum], isSelectable: pkNum === 19 });
+      }
+
+      let finalPk = [{ stats: level1.map(x => x.stat), step: 21, p1Index: 19, p2Index: 20, b1: c5[0].stats[0], b2: c5[1].stats[c5[1].stats.length - 1], currentGender: g[21] }];
+
+      treeStepsData = [];
+      
+      let n7 = c2[0];
+      let b1Obj7 = BANDS[n7.p1Stat];
+      let b2Obj7 = BANDS[n7.p2Stat];
+
+      treeStepsData.push({
+        type: 'unified_static',
+        stepNumber: 1,
+        text: `Cruzar Pokémon ${n7.p1Index} (${b1Obj7.name} <span class="dot-icon" style="background-color: ${b1Obj7.color};"></span>) con Pokémon ${n7.p2Index} (${b2Obj7.name} <span class="dot-icon" style="background-color: ${b2Obj7.color};"></span>).`
+      });
+
+      treeStepsData.push({
+        type: 'unified_interactive',
+        stepNumber: 2,
+        targetNode: 7,
+        text: `Selecciona el género obtenido para nombrarlo Pokémon 7:`
+      });
+
+      let modalStepCounter = 3;
+      const allCrossNodes = [...c2, ...c3, ...c4, ...c5, ...finalPk];
+      
+      allCrossNodes.forEach((node, index) => {
+        if (index === 0) return;
+
+        let b1Obj = BANDS[node.p1Stat || node.b1];
+        let b2Obj = BANDS[node.p2Stat || node.b2];
+        let targetGenderName = node.currentGender === '♂' ? 'MACHO (♂)' : 'HEMBRA (♀)';
+
+        if (node.step === 21) {
+          let b1Final = BANDS['AT'];
+          let b2Final = BANDS['SD'];
+          treeStepsData.push({
+            type: 'unified_static',
+            stepNumber: modalStepCounter,
+            text: `Cruzar Pokémon 19 (${b1Final.name} <span class="dot-icon" style="background-color: ${b1Final.color};"></span>) con Pokémon 20 (${b2Final.name} <span class="dot-icon" style="background-color: ${b2Final.color};"></span>).`
+          });
+        } else {
+          let isInteractive = (node.step === 12 || node.step === 16 || node.step === 19);
+          if (isInteractive) {
+            treeStepsData.push({
+              type: 'unified_static',
+              stepNumber: modalStepCounter,
+              text: `Cruzar Pokémon ${node.p1Index} (${b1Obj.name} <span class="dot-icon" style="background-color: ${b1Obj.color};"></span>) con Pokémon ${node.p2Index} (${b2Obj.name} <span class="dot-icon" style="background-color: ${b2Obj.color};"></span>).<br>Chequear que nazca <strong>${targetGenderName}</strong> y nombrarlo Pokémon ${node.step}.`
+            });
+            modalStepCounter++;
+            treeStepsData.push({
+              type: 'unified_interactive',
+              stepNumber: modalStepCounter,
+              targetNode: node.step,
+              text: `Selecciona el género obtenido para nombrarlo Pokémon ${node.step}:`
+            });
+          } else {
+            treeStepsData.push({
+              type: 'unified_static',
+              stepNumber: modalStepCounter,
+              text: `Cruzar Pokémon ${node.p1Index} (${b1Obj.name} <span class="dot-icon" style="background-color: ${b1Obj.color};"></span>) con Pokémon ${node.p2Index} (${b2Obj.name} <span class="dot-icon" style="background-color: ${b2Obj.color};"></span>).<br>Chequear que nazca <strong>${targetGenderName}</strong> y nombrarlo Pokémon ${node.step}.`
+            });
+          }
+        }
+        modalStepCounter++;
+      });
+
+      treeStepsData.push({
+        type: 'unified_static',
+        stepNumber: modalStepCounter,
+        text: `🎉 ¡Felicitaciones! Haz obtenido tu pokémon perfecto (6x31).`
+      });
+    }
+
     function dibujarLineasOrtogonales() {
       const svg = document.getElementById('svg-connections');
       const tree = document.getElementById('tree-result');
@@ -850,11 +1338,12 @@
         svg.appendChild(path);
       }
 
-      for(let i=1; i<=5; i++) connectNodesOrthogonal(`node-base-${i}`, `node-base-${i+1}`, `node-step-${i}`);
-      for(let i=0; i<4; i++) connectNodesOrthogonal(`node-step-${i+1}`, `node-step-${i+2}`, `node-step-${i+6}`);
-      for(let i=0; i<3; i++) connectNodesOrthogonal(`node-step-${i+6}`, `node-step-${i+7}`, `node-step-${i+10}`);
-      for(let i=0; i<2; i++) connectNodesOrthogonal(`node-step-${i+10}`, `node-step-${i+11}`, `node-step-${i+13}`);
-      connectNodesOrthogonal(`node-step-13`, `node-step-14`, `node-step-15`);
+      for(let i=1; i<=5; i++) connectNodesOrthogonal(`node-base-${i}`, `node-base-${i+1}`, `node-step-${i+6}`);
+      for(let i=0; i<4; i++) connectNodesOrthogonal(`node-step-${i+7}`, `node-step-${i+8}`, `node-step-${i+12}`);
+      for(let i=0; i<3; i++) connectNodesOrthogonal(`node-step-${i+12}`, `node-step-${i+13}`, `node-step-${i+16}`);
+      connectNodesOrthogonal(`node-step-16`, `node-step-17`, `node-step-19`);
+      connectNodesOrthogonal(`node-step-17`, `node-step-18`, `node-step-20`);
+      connectNodesOrthogonal(`node-step-19`, `node-step-20`, `node-step-21`);
     }
 
     window.addEventListener('resize', dibujarLineasOrtogonales);
