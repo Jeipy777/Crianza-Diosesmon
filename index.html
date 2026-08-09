@@ -29,7 +29,29 @@
       margin-bottom: 10px;
     }
     h1 { margin: 0 0 5px 0; color: #00e676; font-size: 26px; }
-    .subtitle { color: #aaa; font-size: 13px; margin: 0; }
+    .subtitle { color: #aaa; font-size: 13px; margin: 0 0 10px 0; }
+
+    /* BOTONES SOCIALES */
+    .social-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+    .social-label { font-size: 12px; color: #888; align-self: center; margin-right: 5px; }
+    .btn-social {
+      padding: 6px 14px;
+      border-radius: 4px;
+      color: white;
+      text-decoration: none;
+      font-size: 12px;
+      font-weight: bold;
+      transition: 0.2s;
+    }
+    .btn-twitch { background-color: #9146ff; }
+    .btn-twitch:hover { background-color: #772ce8; }
+    .btn-youtube { background-color: #ff0000; }
+    .btn-youtube:hover { background-color: #cc0000; }
 
     /* PANELES CON ALTURA UNIFORME */
     .top-panel {
@@ -480,6 +502,13 @@
     <div class="title-area">
       <h1>🧬 Generador de Árbol de Crianza Dinámico</h1>
       <p class="subtitle">Calculadora técnica, visual y financiera para crianza perfecta de 6 IVs</p>
+      
+      <!-- NUEVOS BOTONES SOCIALES AÑADIDOS -->
+      <div class="social-buttons">
+        <span class="social-label">SIGUEME EN:</span>
+        <a href="https://www.twitch.tv/jeipy777" target="_blank" class="btn-social btn-twitch">TWITCH</a>
+        <a href="https://www.youtube.com/@jeipy_777" target="_blank" class="btn-social btn-youtube">YOUTUBE</a>
+      </div>
     </div>
 
     <!-- COMPROBADOR DE COMPATIBILIDAD CON IMÁGENES -->
@@ -910,7 +939,6 @@
 
       treeStepsData = [];
       
-      // PASO 1 (Cruza base 1 y 2 - modificado sin la línea de la cría)
       let n7 = c2[0];
       let b1Obj7 = BANDS[n7.p1Stat];
       let b2Obj7 = BANDS[n7.p2Stat];
@@ -921,7 +949,6 @@
         text: `Cruzar Pokémon ${n7.p1Index} (${b1Obj7.name} <span class="dot-icon" style="background-color: ${b1Obj7.color};"></span>) con Pokémon ${n7.p2Index} (${b2Obj7.name} <span class="dot-icon" style="background-color: ${b2Obj7.color};"></span>).`
       });
 
-      // PASO 2 (Selección de género del Pokémon 7)
       treeStepsData.push({
         type: 'unified_interactive',
         stepNumber: 2,
@@ -929,19 +956,17 @@
         text: `Selecciona el género obtenido para nombrarlo Pokémon 7:`
       });
 
-      // Resto de pasos (del 3 en adelante)
       let modalStepCounter = 3;
       const allCrossNodes = [...c2, ...c3, ...c4, ...c5, ...finalPk];
       
       allCrossNodes.forEach((node, index) => {
-        if (index === 0) return; // Ya procesamos c2[0] en los pasos 1 y 2
+        if (index === 0) return; 
 
         let b1Obj = BANDS[node.p1Stat || node.b1];
         let b2Obj = BANDS[node.p2Stat || node.b2];
         let targetGenderName = node.currentGender === '♂' ? 'MACHO (♂)' : 'HEMBRA (♀)';
 
         if (node.step === 21) {
-          // El cruce final (Pokémon 19 y 20) según requerimiento específico (con puntos de color y sin la línea extra)
           let b1Final = BANDS['AT'];
           let b2Final = BANDS['SD'];
           treeStepsData.push({
@@ -975,7 +1000,6 @@
         modalStepCounter++;
       });
 
-      // Último paso añadido de felicitaciones
       treeStepsData.push({
         type: 'unified_static',
         stepNumber: modalStepCounter,
