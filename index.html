@@ -1,1377 +1,704 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Calculadora de Crianza Dinámica 6 IVs</title>
-  <style>
-    body {
-      background-color: #1a1a1a;
-      color: #ffffff;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      padding: 20px;
-      margin: 0;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía Interactiva de Crianza Pokémon</title>
+    <style>
+        :root {
+            --color-ataque: #ff4d4d;
+            --color-atq-esp: #9b59b6;
+            --color-defensa: #e67e22;
+            --color-def-esp: #f1c40f;
+            --color-salud: #2ecc71;
+            --color-velocidad: #3498db;
+            --bg-dark: #12121a;
+            --card-bg: #1e1e2f;
+        }
 
-    /* ENCABEZADO Y PANELES SUPERIORES ALINEADOS */
-    .top-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: stretch;
-      max-width: 1100px;
-      margin: 0 auto 25px auto;
-      gap: 15px;
-      flex-wrap: wrap;
-    }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-dark);
+            color: #fff;
+            margin: 0;
+            padding: 20px;
+        }
 
-    .title-area {
-      flex: 1 1 100%;
-      text-align: center;
-      margin-bottom: 10px;
-    }
-    h1 { margin: 0 0 5px 0; color: #00e676; font-size: 26px; }
-    .subtitle { color: #aaa; font-size: 13px; margin: 0 0 10px 0; }
+        h1, h2 {
+            text-align: center;
+            color: #f1c40f;
+        }
 
-    /* BOTONES SOCIALES */
-    .social-buttons {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-      margin-bottom: 15px;
-    }
-    .social-label { font-size: 12px; color: #888; align-self: center; margin-right: 5px; }
-    .btn-social {
-      padding: 6px 14px;
-      border-radius: 4px;
-      color: white;
-      text-decoration: none;
-      font-size: 12px;
-      font-weight: bold;
-      transition: 0.2s;
-    }
-    .btn-twitch { background-color: #9146ff; }
-    .btn-twitch:hover { background-color: #772ce8; }
-    .btn-youtube { background-color: #ff0000; }
-    .btn-youtube:hover { background-color: #cc0000; }
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+        }
 
-    /* PANELES CON ALTURA UNIFORME */
-    .top-panel {
-      background: #262626;
-      border: 1px solid #00e676;
-      border-radius: 8px;
-      padding: 14px 16px;
-      flex: 1;
-      min-width: 300px;
-      box-shadow: 0 4px 12px rgba(0,230,118,0.08);
-      box-sizing: border-box;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
+        /* Menú de Navegación Principal */
+        .main-nav {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
 
-    .top-panel h3 {
-      margin: 0 0 10px 0;
-      font-size: 14px;
-      color: #00e676;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
+        .nav-btn {
+            background: #2a2a40;
+            color: #aaa;
+            border: 2px solid #444;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
 
-    /* COMPROBADOR DE COMPATIBILIDAD CON IMÁGENES */
-    .compat-container {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      height: 100%;
-      justify-content: space-between;
-    }
-    
-    .compat-inputs-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
+        .nav-btn.active {
+            background: #f1c40f;
+            color: #12121a;
+            border-color: #f1c40f;
+        }
 
-    .pkmn-input-box {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      background: #1e1e1e;
-      padding: 6px;
-      border-radius: 6px;
-      border: 1px solid #333;
-    }
+        .view-section {
+            display: none;
+        }
 
-    .pkmn-input-box input {
-      background: #181818;
-      border: 1px solid #444;
-      color: #fff;
-      padding: 6px 8px;
-      border-radius: 4px;
-      font-size: 12px;
-      width: 100%;
-      box-sizing: border-box;
-      text-align: center;
-    }
+        .view-section.active {
+            display: block;
+        }
 
-    .pkmn-sprite {
-      width: 56px;
-      height: 56px;
-      margin-top: 4px;
-      object-fit: contain;
-      image-rendering: pixelated;
-      display: none;
-    }
+        /* Estilos sección Grupos de Huevo */
+        .egg-groups-container {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
 
-    .compat-result {
-      font-size: 12px;
-      font-weight: bold;
-      padding: 8px;
-      border-radius: 4px;
-      text-align: center;
-      background: #181818;
-      color: #aaa;
-      border: 1px solid #333;
-      margin-top: auto;
-    }
-    .compat-success { background: #1b5e20; color: #81c784; border-color: #2e7d32; }
-    .compat-error { background: #b71c1c; color: #ef9a9a; border-color: #c62828; }
+        .search-controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
 
-    /* PANEL ECONÓMICO */
-    .econ-grid {
-      display: grid;
-      grid-template-columns: 1fr 90px;
-      gap: 6px;
-      align-items: center;
-      font-size: 12px;
-    }
-    .econ-grid label { color: #ccc; font-weight: normal; }
-    .econ-grid input {
-      background: #181818;
-      border: 1px solid #444;
-      color: #fff;
-      padding: 4px 6px;
-      border-radius: 4px;
-      text-align: right;
-      font-size: 12px;
-    }
-    .total-row {
-      margin-top: 10px;
-      padding-top: 8px;
-      border-top: 1px solid #444;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-weight: bold;
-      font-size: 14px;
-    }
-    .total-price { color: #00e676; font-size: 16px; }
+        .search-input, .gen-select {
+            background: #1a1a2e;
+            color: #fff;
+            border: 1px solid #555;
+            padding: 10px 15px;
+            border-radius: 6px;
+            font-size: 14px;
+        }
 
-    /* CONFIGURACIÓN INICIAL */
-    .panel-config {
-      background-color: #262626;
-      padding: 20px;
-      border-radius: 8px;
-      max-width: 1060px;
-      margin: 0 auto 30px auto;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.6);
-      border: 1px solid #333;
-    }
-    
-    .grid-inputs {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-      gap: 12px;
-      margin-bottom: 20px;
-    }
+        .search-input {
+            width: 250px;
+        }
 
-    .card-input {
-      background: #333;
-      padding: 10px;
-      border-radius: 6px;
-      border: 1px solid #444;
-    }
+        .pokemon-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 15px;
+            max-height: 550px;
+            overflow-y: auto;
+            padding: 10px;
+        }
 
-    label { font-size: 12px; font-weight: bold; display: block; margin-bottom: 4px; color: #ddd; }
-    select {
-      width: 100%;
-      padding: 6px;
-      background: #1e1e1e;
-      color: #fff;
-      border: 1px solid #555;
-      border-radius: 4px;
-      margin-bottom: 6px;
-      font-size: 12px;
-    }
+        .pokemon-card {
+            background: #2a2a40;
+            border: 1px solid #444;
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+        }
 
-    .button-group {
-      display: flex;
-      gap: 10px;
-    }
+        .pokemon-card img {
+            width: 80px;
+            height: 80px;
+            image-rendering: pixelated;
+        }
 
-    button {
-      flex: 1;
-      padding: 12px;
-      background: #00e676;
-      color: #000;
-      font-weight: 900;
-      font-size: 15px;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: 0.2s;
-    }
-    button:hover { background: #00c853; }
+        .pokemon-card span {
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: capitalize;
+            color: #ddd;
+            margin-top: 5px;
+        }
 
-    .btn-reset {
-      background: #d32f2f;
-      color: #fff;
-    }
-    .btn-reset:hover { background: #b71c1c; }
+        .pokemon-card small {
+            font-size: 10px;
+            color: #888;
+        }
 
-    .btn-steps {
-      background: #00bcd4;
-      color: #000;
-    }
-    .btn-steps:hover { background: #00acc1; }
+        /* Estilos del Esquema de Crianza */
+        .recoleccion-section, .fase-container {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            overflow-x: auto;
+        }
 
-    .error-msg {
-      background: #d32f2f;
-      color: #fff;
-      padding: 10px;
-      border-radius: 6px;
-      text-align: center;
-      margin-bottom: 15px;
-      display: none;
-      font-weight: bold;
-    }
+        .stat-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            background: rgba(255,255,255,0.03);
+            padding: 8px 12px;
+            border-radius: 8px;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
 
-    /* MODAL DE PASO A PASO - MÁS ANCHO Y CON TEXTO VISIBLE */
-    .modal-overlay {
-      position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.8);
-      display: none;
-      justify-content: center;
-      align-items: center;
-      z-index: 1000;
-    }
-    .modal-card {
-      background: #212529;
-      border: 2px solid #00bcd4;
-      border-radius: 12px;
-      width: 90%;
-      max-width: 680px;
-      padding: 25px;
-      box-sizing: border-box;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.8);
-      text-align: center;
-    }
-    .modal-title {
-      color: #00bcd4;
-      font-size: 20px;
-      font-weight: bold;
-      margin-bottom: 20px;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
-    .modal-content-box {
-      background: #181a1d;
-      border: 1px solid #444;
-      border-radius: 8px;
-      padding: 24px;
-      margin-bottom: 20px;
-      font-size: 15px;
-      color: #ffffff !important;
-      min-height: 90px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      gap: 14px;
-      text-align: center;
-    }
-    .modal-content-box strong {
-      color: #00e676;
-    }
-    .modal-buttons {
-      display: flex;
-      gap: 12px;
-    }
-    .modal-btn {
-      flex: 1;
-      padding: 12px;
-      border-radius: 6px;
-      font-weight: bold;
-      font-size: 14px;
-      cursor: pointer;
-      border: none;
-      transition: 0.2s;
-    }
-    .btn-prev { background: #333; color: #aaa; }
-    .btn-prev:hover:not(:disabled) { background: #444; color: #fff; }
-    .btn-prev:disabled { opacity: 0.4; cursor: not-allowed; }
-    .btn-next { background: #00bcd4; color: #000; }
-    .btn-next:hover { background: #00acc1; }
-    .modal-close-x {
-      float: right;
-      background: none;
-      border: none;
-      color: #aaa;
-      font-size: 20px;
-      cursor: pointer;
-      padding: 0;
-      margin-top: -10px;
-    }
-    .modal-close-x:hover { color: #fff; }
+        .stat-indicator { width: 25px; height: 25px; border-radius: 50%; }
+        .stat-name { width: 170px; font-weight: bold; font-size: 14px; }
+        .checkbox-container { display: flex; gap: 20px; flex-wrap: wrap; }
+        .checkbox-group { display: flex; flex-direction: column; align-items: center; font-size: 11px; color: #aaa; }
+        .stat-checkbox { width: 18px; height: 18px; cursor: pointer; accent-color: #3498db; margin-top: 3px; }
+        .assigned-summary { margin-top: 15px; padding: 10px; background: rgba(0,0,0,0.4); border-radius: 6px; font-size: 14px; text-align: center; }
+        
+        .btn-container { display: flex; justify-content: center; gap: 15px; margin-bottom: 15px; }
+        .btn-action { color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 14px; }
+        .btn-reset { background: #e74c3c; }
+        .btn-reset:hover { background: #c0392b; }
+        .btn-finalizar { background: #27ae60; }
+        .btn-finalizar:hover { background: #219653; }
 
-    /* ESTILOS DE RADIO BUTTONS EN MODAL */
-    .radio-group-modal {
-      display: flex;
-      gap: 20px;
-      justify-content: center;
-      margin-top: 5px;
-    }
-    .radio-group-modal label {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      cursor: pointer;
-      font-size: 14px;
-      color: #fff;
-    }
-    .radio-group-modal input[type="radio"] {
-      accent-color: #00bcd4;
-      width: 16px;
-      height: 16px;
-    }
+        .error-msg { color: #e74c3c; font-weight: bold; text-align: center; margin-top: 10px; }
 
-    /* ESTRUCTURA DEL ÁRBOL */
-    .tree-container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 45px;
-      overflow-x: auto;
-      padding-bottom: 60px;
-      position: relative;
-    }
+        .tree-level { display: flex; justify-content: space-around; margin-bottom: 25px; position: relative; }
+        .node {
+            background: #2a2a40;
+            border: 2px solid #444;
+            border-radius: 8px;
+            padding: 6px;
+            width: 85px;
+            min-height: 85px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+            text-align: center;
+        }
 
-    .level {
-      display: flex;
-      justify-content: center;
-      gap: 20px;
-      width: 100%;
-      position: relative;
-      z-index: 2;
-    }
+        .node-dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
+        .node-label { font-size: 11px; font-weight: bold; color: #ddd; }
 
-    .node {
-      background: #262626;
-      border: 1px solid #444;
-      border-radius: 8px;
-      padding: 10px 12px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 6px;
-      min-width: 200px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.5);
-      position: relative;
-      box-sizing: border-box;
-    }
+        .gender-select {
+            background: #1a1a2e;
+            color: #fff;
+            border: 1px solid #555;
+            border-radius: 4px;
+            font-size: 10px;
+            padding: 2px;
+            width: 100%;
+            cursor: pointer;
+            margin-top: 2px;
+        }
 
-    .node.completed {
-      background: #122818;
-      border-color: #00e676;
-      opacity: 0.75;
-    }
-    .node.completed .step-label,
-    .node.completed .parents-info {
-      color: #81c784;
-    }
+        .gender-display {
+            font-size: 10px;
+            font-weight: bold;
+            color: #aaa;
+            margin-top: 2px;
+            background: rgba(0,0,0,0.2);
+            padding: 2px 4px;
+            border-radius: 4px;
+            width: 100%;
+            box-sizing: border-box;
+        }
 
-    .node-check {
-      position: absolute;
-      top: 8px;
-      right: 8px;
-      width: 16px;
-      height: 16px;
-      cursor: pointer;
-      accent-color: #00e676;
-    }
-
-    .stats-container { 
-      display: flex; 
-      gap: 3px; 
-      flex-wrap: nowrap;
-      justify-content: center; 
-      width: 100%;
-    }
-    
-    .badge {
-      padding: 3px 5px;
-      border-radius: 4px;
-      font-size: 11px;
-      font-weight: 800;
-      color: #181818;
-      text-transform: uppercase;
-    }
-
-    .dot-icon {
-      width: 9px;
-      height: 9px;
-      border-radius: 50%;
-      display: inline-block;
-      margin-left: 5px;
-      vertical-align: middle;
-    }
-
-    .parents-info {
-      font-size: 11px;
-      background: #181818;
-      padding: 6px 8px;
-      border-radius: 4px;
-      border: 1px solid #333;
-      margin-top: 2px;
-      width: 100%;
-      box-sizing: border-box;
-    }
-
-    .parent-line { 
-      margin: 2px 0; 
-      display: flex; 
-      align-items: center; 
-      white-space: nowrap;
-    }
-    
-    .male-text { color: #2196f3; font-weight: bold; }
-    .female-text { color: #e91e63; font-weight: bold; }
-
-    .gender-selector {
-      background: #1e1e1e;
-      color: #00e676;
-      border: 1px solid #00e676;
-      font-size: 11px;
-      font-weight: bold;
-      border-radius: 4px;
-      padding: 4px 4px;
-      margin-top: 2px;
-      cursor: pointer;
-      width: 100%;
-      text-align: center;
-    }
-
-    .required-badge {
-      font-size: 10px;
-      padding: 4px 6px;
-      border-radius: 4px;
-      font-weight: bold;
-      margin-top: 2px;
-      width: 100%;
-      text-align: center;
-      box-sizing: border-box;
-      text-transform: uppercase;
-    }
-    .req-male { background: #0d47a1; color: #82b1ff; border: 1px solid #1565c0; }
-    .req-female { background: #880e4f; color: #ff80ab; border: 1px solid #ad1457; }
-
-    .bg-AT { background-color: #e53935; }
-    .bg-SA { background-color: #dd5ed9; }
-    .bg-HP { background-color: #4caf50; }
-    .bg-SP { background-color: #00acc1; }
-    .bg-DF { background-color: #fb8c00; }
-    .bg-SD { background-color: #fdd835; }
-
-    .step-label { font-size: 11px; color: #aaa; font-weight: bold; display: flex; align-items: center; gap: 4px; padding-right: 18px; }
-
-    .connections-svg {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      z-index: 1;
-    }
-  </style>
+        .tree-level-2 { justify-content: space-around; padding: 0 40px; }
+        .tree-level-3 { justify-content: space-around; padding: 0 120px; }
+        .tree-level-final { justify-content: center; }
+        .fase-5-level { display: flex; justify-content: space-around; margin-bottom: 25px; padding: 0 100px; }
+    </style>
 </head>
 <body>
 
-  <div class="top-header">
-    <div class="title-area">
-      <h1>🧬 Generador de Árbol de Crianza Dinámico</h1>
-      <p class="subtitle">Calculadora técnica, visual y financiera para crianza perfecta de 6 IVs</p>
-      
-      <!-- NUEVOS BOTONES SOCIALES AÑADIDOS -->
-      <div class="social-buttons">
-        <span class="social-label">SIGUEME EN:</span>
-        <a href="https://www.twitch.tv/jeipy777" target="_blank" class="btn-social btn-twitch">TWITCH</a>
-        <a href="https://www.youtube.com/@jeipy_777" target="_blank" class="btn-social btn-youtube">YOUTUBE</a>
-      </div>
+<div class="container">
+    <h1>Guía Interactiva de Crianza Pokémon</h1>
+
+    <!-- Botones de Navegación -->
+    <div class="main-nav">
+        <button class="nav-btn" onclick="switchView('grupos')">GRUPOS HUEVOS</button>
+        <button class="nav-btn active" onclick="switchView('esquema')">ESQUEMA CRIANZA</button>
     </div>
 
-    <!-- COMPROBADOR DE COMPATIBILIDAD CON IMÁGENES -->
-    <div class="top-panel">
-      <h3>🔍 Comprobador de Compatibilidad</h3>
-      <div class="compat-container">
-        <div class="compat-inputs-grid">
-          <div class="pkmn-input-box">
-            <input type="text" id="pkmn1" placeholder="Ej: Dratini" list="pkmn-list" oninput="debounceCompatibilidad()">
-            <img id="img-pkmn1" class="pkmn-sprite" alt="Sprite 1">
-          </div>
-          <div class="pkmn-input-box">
-            <input type="text" id="pkmn2" placeholder="Ej: Magikarp" list="pkmn-list" oninput="debounceCompatibilidad()">
-            <img id="img-pkmn2" class="pkmn-sprite" alt="Sprite 2">
-          </div>
+    <!-- VISTA 1: GRUPOS HUEVOS -->
+    <div id="view-grupos" class="view-section">
+        <div class="egg-groups-container">
+            <h2>Buscador de Compatibilidad por Grupos Huevo</h2>
+            <div class="search-controls">
+                <input type="text" id="pokemon-search" class="search-input" placeholder="Ej. dratini, pikachu..." value="dratini" list="pokemon-list">
+                <datalist id="pokemon-list"></datalist>
+
+                <select id="gen-filter" class="gen-select">
+                    <option value="all">Todas las Generaciones</option>
+                    <option value="1">Hasta Gen 1</option>
+                    <option value="2">Hasta Gen 2</option>
+                    <option value="3">Hasta Gen 3</option>
+                    <option value="4" selected>Hasta Gen 4</option>
+                    <option value="5">Hasta Gen 5</option>
+                    <option value="6">Hasta Gen 6</option>
+                    <option value="7">Hasta Gen 7</option>
+                    <option value="8">Hasta Gen 8</option>
+                    <option value="9">Hasta Gen 9</option>
+                </select>
+                <button class="btn-action btn-finalizar" onclick="buscarCompatibles()">Buscar</button>
+            </div>
+            <div id="egg-groups-info" style="text-align: center; margin-bottom: 15px; color: #f1c40f; font-weight: bold;"></div>
+            <div id="pokemon-results" class="pokemon-grid">
+                <p style="grid-column: 1/-1; text-align: center; color: #888;">Cargando buscador...</p>
+            </div>
         </div>
-        <datalist id="pkmn-list"></datalist>
-        <div id="compat-result" class="compat-result">Ingresa 2 Pokémon para verificar...</div>
-      </div>
     </div>
 
-    <!-- PANEL ECONÓMICO -->
-    <div class="top-panel">
-      <h3>💰 Presupuesto de Crianza</h3>
-      <div class="econ-grid">
-        <label>Costo por Cruza:</label>
-        <input type="number" id="cost-breed" value="2500" oninput="calcularPresupuesto()">
-        
-        <label>Costo por Banda:</label>
-        <input type="number" id="cost-band" value="500" oninput="calcularPresupuesto()">
-        
-        <label>Costo por Género:</label>
-        <input type="number" id="cost-gender" value="5000" oninput="calcularPresupuesto()">
-      </div>
-      <div class="total-row">
-        <span>Costo Total Est.:</span>
-        <span class="total-price" id="total-price-display">$102.500</span>
-      </div>
+    <!-- VISTA 2: ESQUEMA CRIANZA -->
+    <div id="view-esquema" class="view-section active">
+        <div class="recoleccion-section">
+            <h2>RECOLECCIÓN - ASIGNACIÓN DE VALORES</h2>
+            <div class="btn-container">
+                <button class="btn-action btn-reset" onclick="resetChecks()">Reiniciar</button>
+                <button class="btn-action btn-finalizar" onclick="validarYFinalizar()">Finalizar</button>
+            </div>
+            <div id="stats-inputs"></div>
+            <div class="assigned-summary">
+                <strong>Estado de Metas (16, 8, 4, 2, 1, 1):</strong>
+                <p id="order-log" style="margin: 5px 0 0 0; color: #ccc;">Selecciona los valores correspondientes y presiona Finalizar.</p>
+            </div>
+            <div id="error-container"></div>
+        </div>
+        <div id="fases-wrapper"></div>
     </div>
-  </div>
+</div>
 
-  <div class="panel-config">
-    <div id="error-box" class="error-msg"></div>
-    <div class="grid-inputs" id="inputs-container"></div>
-    <div class="button-group">
-      <button onclick="generarArbolInteligente()">GENERAR ESQUEMA</button>
-      <button class="btn-steps" onclick="abrirModalPasos()">GENERAR PASOS</button>
-      <button class="btn-reset" onclick="resetearChecks()">RESET CHECKS</button>
-    </div>
-  </div>
+<script>
+    // --- NAVEGACIÓN ENTRE VISTAS ---
+    function switchView(viewName) {
+        document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active'));
 
-  <div class="tree-container" id="tree-result">
-    <svg id="svg-connections" class="connections-svg"></svg>
-  </div>
+        if (viewName === 'grupos') {
+            document.querySelector('.main-nav button:nth-child(1)').classList.add('active');
+            document.getElementById('view-grupos').classList.add('active');
+        } else {
+            document.querySelector('.main-nav button:nth-child(2)').classList.add('active');
+            document.getElementById('view-esquema').classList.add('active');
+        }
+    }
 
-  <!-- MODAL DE PASO A PASO INTERACTIVO -->
-  <div id="steps-modal" class="modal-overlay">
-    <div class="modal-card">
-      <button class="modal-close-x" onclick="cerrarModalPasos()">&times;</button>
-      <div id="modal-step-title" class="modal-title">PASO 1 de 17</div>
-      <div id="modal-content-box" class="modal-content-box">
-        <!-- Contenido dinámico unificado del paso -->
-      </div>
-      <div class="modal-buttons">
-        <button id="modal-btn-prev" class="modal-btn btn-prev" onclick="cambiarPasoModal(-1)">ANTERIOR</button>
-        <button id="modal-btn-next" class="modal-btn btn-next" onclick="cambiarPasoModal(1)">SIGUIENTE</button>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    const STATS = [
-      { code: 'AT', name: 'Ataque' },
-      { code: 'SA', name: 'Atq. Esp' },
-      { code: 'HP', name: 'Salud' },
-      { code: 'SP', name: 'Velocidad' },
-      { code: 'DF', name: 'Defensa' },
-      { code: 'SD', name: 'Def. Esp' }
-    ];
-
-    const BANDS = {
-      'AT': { name: 'Brazal recio', color: '#e53935' },
-      'SA': { name: 'Lente recia', color: '#dd5ed9' },
-      'HP': { name: 'Pesa recia', color: '#4caf50' },
-      'SP': { name: 'Franja recia', color: '#00acc1' },
-      'DF': { name: 'Cinto recio', color: '#fb8c00' },
-      'SD': { name: 'Banda recia', color: '#fdd835' }
+    // --- GRUPOS HUEVOS Y AUTOCOMPLETADO ---
+    const genLimits = {
+        "1": { max: 151 }, "2": { max: 251 }, "3": { max: 386 },
+        "4": { max: 493 }, "5": { max: 649 }, "6": { max: 721 },
+        "7": { max: 809 }, "8": { max: 905 }, "9": { max: 1025 }, "all": { max: 1025 }
     };
 
-    let userGenders = { 7: '♂', 12: '♂', 16: '♂', 19: '♂' };
-    let completedNodes = {}; 
-    let cacheEggGroups = {};
-    let currentModalStep = 1;
-
-    async function cargarListaCompletaPokemon() {
-      try {
-        const res = await fetch('https://pokeapi.co/api/v2/pokemon-species?limit=1025');
-        const data = await res.json();
-        const datalist = document.getElementById('pkmn-list');
-        datalist.innerHTML = data.results.map(p => `<option value="${p.name.charAt(0).toUpperCase() + p.name.slice(1)}">`).join('');
-      } catch (e) {
-        console.log("Error cargando la lista de Pokémon:", e);
-      }
-    }
-    cargarListaCompletaPokemon();
-
-    const container = document.getElementById('inputs-container');
-    for (let i = 1; i <= 6; i++) {
-      container.innerHTML += `
-        <div class="card-input">
-          <label>Pokémon Base ${i}</label>
-          <select id="stat-${i}">
-            ${STATS.map((s, idx) => `<option value="${s.code}" ${idx === i-1 ? 'selected' : ''}>${s.name} (${s.code})</option>`).join('')}
-          </select>
-          <select id="gender-${i}">
-            <option value="♂" ${i <= 3 ? 'selected' : ''}>Macho (♂)</option>
-            <option value="♀" ${i > 3 ? 'selected' : ''}>Hembra (♀)</option>
-          </select>
-        </div>
-      `;
+    async function initAutocompletado() {
+        try {
+            const res = await fetch('https://pokeapi.co/api/v2/pokemon-species?limit=1025');
+            const data = await res.json();
+            const datalist = document.getElementById('pokemon-list');
+            datalist.innerHTML = '';
+            data.results.forEach(p => {
+                let option = document.createElement('option');
+                option.value = p.name;
+                datalist.appendChild(option);
+            });
+            buscarCompatibles();
+        } catch (e) {
+            console.error("Error al cargar autocompletado", e);
+        }
     }
 
-    function renderBadge(stat) {
-      return `<span class="badge bg-${stat}">${stat}</span>`;
+    async function buscarCompatibles() {
+        const query = document.getElementById('pokemon-search').value.trim().toLowerCase();
+        const maxGen = document.getElementById('gen-filter').value;
+        const resultsContainer = document.getElementById('pokemon-results');
+        const infoContainer = document.getElementById('egg-groups-info');
+
+        if (!query) return;
+        resultsContainer.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: #aaa;">Buscando información...</p>`;
+        infoContainer.innerHTML = '';
+
+        try {
+            const res = await fetch(`https://pokeapi.co/api/v2/pokemon-species/${query}`);
+            if (!res.ok) throw new Error("Pokémon no encontrado");
+            const data = await res.json();
+
+            const eggGroups = data.egg_groups.map(g => g.name);
+            infoContainer.innerHTML = `Pokémon: <span style="text-transform:capitalize">${data.name}</span> | Grupos Huevo: ${eggGroups.join(', ').toUpperCase()}`;
+
+            let compatibleSet = new Map();
+            for (let group of eggGroups) {
+                const groupRes = await fetch(`https://pokeapi.co/api/v2/egg-group/${group}`);
+                const groupData = await groupRes.json();
+                groupData.pokemon_species.forEach(p => {
+                    const idMatch = p.url.match(/\/(\d+)\/$/);
+                    if (idMatch) {
+                        const id = parseInt(idMatch[1]);
+                        if (id <= genLimits[maxGen].max && id <= 1025) {
+                            compatibleSet.set(id, p.name);
+                        }
+                    }
+                });
+            }
+
+            const sortedPokemon = Array.from(compatibleSet.entries()).sort((a, b) => a[0] - b[0]);
+            resultsContainer.innerHTML = '';
+            if (sortedPokemon.length === 0) {
+                resultsContainer.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: #e74c3c;">No se encontraron Pokémon compatibles con los filtros seleccionados.</p>`;
+                return;
+            }
+
+            sortedPokemon.forEach(([id, name]) => {
+                const card = document.createElement('div');
+                card.className = 'pokemon-card';
+                const spriteUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`;
+                card.innerHTML = `
+                    <small>#${id}</small>
+                    <img src="${spriteUrl}" alt="${name}" loading="lazy" onerror="this.src='https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/0.png'">
+                    <span>${name}</span>
+                `;
+                resultsContainer.appendChild(card);
+            });
+        } catch (error) {
+            resultsContainer.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: #e74c3c;">⚠️ Error: No se pudo encontrar el Pokémon. Verifica el nombre.</p>`;
+        }
     }
 
-    function renderParentLine(parentNum, statCode) {
-      const b = BANDS[statCode];
-      return `<div class="parent-line">P${parentNum}:&nbsp;${b.name} (${statCode})<span class="dot-icon" style="background-color: ${b.color};"></span></div>`;
+    // --- ESQUEMA DE CRIANZA ---
+    const statsConfig = [
+        { id: 'ataque', name: 'ATAQUE', color: 'var(--color-ataque)' },
+        { id: 'atq_esp', name: 'ATAQUE ESPECIAL', color: 'var(--color-atq-esp)' },
+        { id: 'defensa', name: 'DEFENSA', color: 'var(--color-defensa)' },
+        { id: 'def_esp', name: 'DEFENSA ESPECIAL', color: 'var(--color-def-esp)' },
+        { id: 'salud', name: 'SALUD', color: 'var(--color-salud)' },
+        { id: 'velocidad', name: 'VELOCIDAD', color: 'var(--color-velocidad)' }
+    ];
+
+    const valoresPosibles = [16, 8, 4, 2, 1];
+    const fasesData = [
+        { fase: 1, p8Target: 1 },
+        { fase: 2, p8Target: 2 },
+        { fase: 3, p8Target: 2 },
+        { fase: 4, p8Target: 1 }
+    ];
+
+    function initRecoleccion() {
+        const container = document.getElementById('stats-inputs');
+        container.innerHTML = '';
+        statsConfig.forEach(stat => {
+            let row = document.createElement('div');
+            row.className = 'stat-row';
+            
+            let indicator = document.createElement('div');
+            indicator.className = 'stat-indicator';
+            indicator.style.backgroundColor = stat.color;
+
+            let nameLabel = document.createElement('div');
+            nameLabel.className = 'stat-name';
+            nameLabel.innerText = stat.name;
+
+            let checkContainer = document.createElement('div');
+            checkContainer.className = 'checkbox-container';
+
+            valoresPosibles.forEach(val => {
+                let group = document.createElement('div');
+                group.className = 'checkbox-group';
+                group.innerText = val;
+
+                let chk = document.createElement('input');
+                chk.type = 'checkbox';
+                chk.className = 'stat-checkbox';
+                chk.dataset.stat = stat.id;
+                chk.dataset.value = val;
+                chk.onchange = actualizarLogEnVivo;
+
+                group.appendChild(chk);
+                checkContainer.appendChild(group);
+            });
+
+            row.appendChild(indicator);
+            row.appendChild(nameLabel);
+            row.appendChild(checkContainer);
+            container.appendChild(row);
+        });
     }
 
-    function updateStepGender(step, newGender) {
-      userGenders[step] = newGender;
-      generarArbolInteligente();
+    function getStatCounts() {
+        let counts = {};
+        statsConfig.forEach(stat => {
+            counts[stat.id] = 0;
+            const checkboxes = document.querySelectorAll(`.stat-checkbox[data-stat="${stat.id}"]`);
+            checkboxes.forEach(chk => {
+                if (chk.checked) counts[stat.id] += parseInt(chk.dataset.value);
+            });
+        });
+        return counts;
     }
 
-    function toggleNodeComplete(checkbox, nodeId) {
-      completedNodes[nodeId] = checkbox.checked;
-      const nodeElement = document.getElementById(nodeId);
-      if (checkbox.checked) {
-        nodeElement.classList.add('completed');
-      } else {
-        nodeElement.classList.remove('completed');
-      }
+    function actualizarLogEnVivo() {
+        const counts = getStatCounts();
+        document.getElementById('order-log').innerHTML = statsConfig.map(s => `${s.name}: <b>${counts[s.id]}</b>`).join(' | ');
     }
 
-    function resetearChecks() {
-      completedNodes = {};
-      const checkboxes = document.querySelectorAll('.node-check');
-      checkboxes.forEach(cb => cb.checked = false);
-      const nodes = document.querySelectorAll('.node');
-      nodes.forEach(n => n.classList.remove('completed'));
+    function validarYFinalizar() {
+        let asignacionesTotales = [];
+        statsConfig.forEach(stat => {
+            let checkboxes = document.querySelectorAll(`.stat-checkbox[data-stat="${stat.id}"]`);
+            let sumaStat = 0;
+            checkboxes.forEach(chk => {
+                if (chk.checked) sumaStat += parseInt(chk.dataset.value);
+            });
+            if (sumaStat > 0) asignacionesTotales.push(sumaStat);
+        });
+
+        let valoresOrdenados = [...asignacionesTotales].sort((a, b) => b - a);
+        let metasRequeridas = [16, 8, 4, 2, 1, 1];
+        let esValido = valoresOrdenados.length === metasRequeridas.length &&
+                       valoresOrdenados.every((val, index) => val === metasRequeridas[index]);
+
+        const errorContainer = document.getElementById('error-container');
+        if (!esValido) {
+            errorContainer.innerHTML = `<div class="error-msg">⚠️ Error: Debes asignar exactamente una casilla de 16, una de 8, una de 4, una de 2 y dos de 1 entre los diferentes stats.</div>`;
+            document.getElementById('fases-wrapper').innerHTML = '';
+            return;
+        }
+
+        errorContainer.innerHTML = '';
+        renderFases(getStatCounts());
     }
 
-    let timerCompat;
-    function debounceCompatibilidad() {
-      clearTimeout(timerCompat);
-      timerCompat = setTimeout(comprobarCompatibilidadAPI, 300);
-    }
+    function calcularAsignacionesFase(counts, p8TargetValue, faseIndex) {
+        let asignacionesP = new Array(8).fill(null);
+        let statsOrdenados = [...statsConfig].sort((a, b) => counts[b.id] - counts[a.id]);
 
-    async function obtenerDatosPokemon(nombre) {
-      const query = nombre.toLowerCase().trim();
-      if (!query) return null;
-      if (cacheEggGroups[query]) return cacheEggGroups[query];
-
-      try {
-        const res = await fetch(`https://pokeapi.co/api/v2/pokemon-species/${query}`);
-        if (!res.ok) return null;
-        const data = await res.json();
+        let primaryStat = statsOrdenados[0];
+        let secondaryStat = statsOrdenados[1];
+        let thirdStat = statsOrdenados[2];
         
-        const resPkmn = await fetch(`https://pokeapi.co/api/v2/pokemon/${data.id}`);
-        let spriteUrl = null;
-        if (resPkmn.ok) {
-          const pkmnData = await resPkmn.json();
-          spriteUrl = pkmnData.sprites.front_default;
+        let statsConValor1 = statsOrdenados.filter(s => counts[s.id] === 1);
+        let color1 = statsConValor1[0] || statsOrdenados[statsOrdenados.length - 1];
+        let color1Plus = statsConValor1[1] || color1;
+        let color2 = statsOrdenados.find(s => counts[s.id] === 2) || statsOrdenados[3];
+
+        let targetStat = color1;
+        if (faseIndex === 2 || faseIndex === 3) targetStat = color2;
+        else if (faseIndex === 4) targetStat = color1Plus;
+
+        if (faseIndex === 4) {
+            primaryStat = statsOrdenados[1];
+            secondaryStat = statsOrdenados[0];
         }
 
-        const info = {
-          grupos: data.egg_groups.map(g => g.name),
-          sprite: spriteUrl
-        };
+        asignacionesP[0] = primaryStat;   
+        asignacionesP[1] = secondaryStat; 
+        asignacionesP[2] = primaryStat;   
+        asignacionesP[3] = thirdStat;     
+        asignacionesP[4] = primaryStat;   
+        asignacionesP[5] = secondaryStat; 
+        asignacionesP[6] = primaryStat;   
+        asignacionesP[7] = targetStat;    
 
-        cacheEggGroups[query] = info;
-        return info;
-      } catch (e) {
-        return null;
-      }
+        return { p: asignacionesP, p9: asignacionesP[1], p10: asignacionesP[3], p11: asignacionesP[5], p12: asignacionesP[7], p13: asignacionesP[3], p14: asignacionesP[7], f: asignacionesP[7] };
     }
 
-    async function comprobarCompatibilidadAPI() {
-      const name1 = document.getElementById('pkmn1').value.trim();
-      const name2 = document.getElementById('pkmn2').value.trim();
-      const resDiv = document.getElementById('compat-result');
-      const img1 = document.getElementById('img-pkmn1');
-      const img2 = document.getElementById('img-pkmn2');
-
-      if (!name1 && !name2) {
-        resDiv.innerText = "Ingresa 2 Pokémon para verificar...";
-        resDiv.className = "compat-result";
-        img1.style.display = 'none';
-        img2.style.display = 'none';
-        return;
-      }
-
-      resDiv.innerText = "⏳ Verificando datos e imágenes...";
-      resDiv.className = "compat-result";
-
-      const [p1, p2] = await Promise.all([obtenerDatosPokemon(name1), obtenerDatosPokemon(name2)]);
-
-      if (p1 && p1.sprite) {
-        img1.src = p1.sprite;
-        img1.style.display = 'block';
-      } else {
-        img1.style.display = 'none';
-      }
-
-      if (p2 && p2.sprite) {
-        img2.src = p2.sprite;
-        img2.style.display = 'block';
-      } else {
-        img2.style.display = 'none';
-      }
-
-      if (!name1 || !name2) {
-        resDiv.innerText = "Ingresa el segundo Pokémon...";
-        return;
-      }
-
-      if (!p1 || !p2) {
-        resDiv.innerText = "⚠️ Revisa los nombres escritos (deben ser válidos).";
-        resDiv.className = "compat-result compat-error";
-        return;
-      }
-
-      const g1 = p1.grupos;
-      const g2 = p2.grupos;
-
-      if (g1.includes("no-eggs") || g2.includes("no-eggs")) {
-        resDiv.innerText = "❌ INCOMPATIBLES (No se pueden criar / Legendario o Bebé)";
-        resDiv.className = "compat-result compat-error";
-        return;
-      }
-
-      if (g1.includes("ditto") || g2.includes("ditto")) {
-        resDiv.innerText = "✅ ¡COMPATIBLES! (Cruza con Ditto)";
-        resDiv.className = "compat-result compat-success";
-        return;
-      }
-
-      const compartidos = g1.filter(g => g2.includes(g));
-
-      if (compartidos.length > 0) {
-        resDiv.innerText = `✅ ¡COMPATIBLES! Grupos: ${compartidos.join(', ').toUpperCase()}`;
-        resDiv.className = "compat-result compat-success";
-      } else {
-        resDiv.innerText = `❌ INCOMPATIBLES (${g1.join('/')} vs ${g2.join('/')})`;
-        resDiv.className = "compat-result compat-error";
-      }
+    function handleGenderChange(selectElement, targetDisplayId) {
+        const selectedVal = selectElement.value;
+        const targetDisplay = document.getElementById(targetDisplayId);
+        if (targetDisplay) targetDisplay.innerText = selectedVal === 'Macho' ? 'Hembra' : 'Macho';
     }
 
-    function calcularPresupuesto() {
-      const cBreed = parseFloat(document.getElementById('cost-breed').value) || 0;
-      const cBand = parseFloat(document.getElementById('cost-band').value) || 0;
-      const cGender = parseFloat(document.getElementById('cost-gender').value) || 0;
-
-      const totalCruzas = 15;
-      const totalBandasUsadas = 30;
-      const totalSeleccionesGenero = 10; 
-
-      const total = (totalCruzas * cBreed) + (totalBandasUsadas * cBand) + (totalSeleccionesGenero * cGender);
-      document.getElementById('total-price-display').innerText = '$' + total.toLocaleString();
+    function handleF1GenderChange(selectElement) {
+        const val = selectElement.value;
+        const oppVal = val === 'Macho' ? 'Hembra' : 'Macho';
+        const f2Display = document.getElementById('f5-f2-gender');
+        if (f2Display) f2Display.innerText = oppVal;
+        const f5f1 = document.getElementById('f5-f1-display');
+        const f5f2 = document.getElementById('f5-f2-display');
+        if (f5f1) f5f1.innerText = val;
+        if (f5f2) f5f2.innerText = oppVal;
     }
 
-    let treeStepsData = [];
+    function handleF3GenderChange(selectElement) {
+        const val = selectElement.value;
+        const oppVal = val === 'Macho' ? 'Hembra' : 'Macho';
+        const f4Display = document.getElementById('f5-f4-gender');
+        if (f4Display) f4Display.innerText = oppVal;
+        const f5f3 = document.getElementById('f5-f3-display');
+        const f5f4 = document.getElementById('f5-f4-display');
+        if (f5f3) f5f3.innerText = val;
+        if (f5f4) f5f4.innerText = oppVal;
+    }
 
-    function generarArbolInteligente() {
-      const errorBox = document.getElementById('error-box');
-      errorBox.style.display = 'none';
+    function handleF5GenderChange(selectElement) {
+        const val = selectElement.value;
+        const oppVal = val === 'Macho' ? 'Hembra' : 'Macho';
+        const f6Display = document.getElementById('f5-f6-display');
+        if (f6Display) f6Display.innerText = oppVal;
+    }
 
-      let pInput = [];
-      for (let i = 1; i <= 6; i++) {
-        pInput.push({
-          stat: document.getElementById(`stat-${i}`).value,
-          gender: document.getElementById(`gender-${i}`).value
-        });
-      }
+    function renderFases(counts) {
+        const wrapper = document.getElementById('fases-wrapper');
+        wrapper.innerHTML = '';
 
-      let statsUnicos = new Set(pInput.map(x => x.stat));
-      if (statsUnicos.size !== 6) {
-        errorBox.innerText = "⚠️ Debes seleccionar 6 estadísticas de 31 IVs DIFERENTES.";
-        errorBox.style.display = 'block';
-        return;
-      }
+        fasesData.forEach(faseInfo => {
+            let data = calcularAsignacionesFase(counts, faseInfo.p8Target, faseInfo.fase);
+            let faseDiv = document.createElement('div');
+            faseDiv.className = 'fase-container';
+            faseDiv.innerHTML = `<h2>FASE ${faseInfo.fase}</h2>`;
 
-      let machos = pInput.filter(x => x.gender === '♂');
-      let hembras = pInput.filter(x => x.gender === '♀');
+            // Nivel 1 (P1 a P8)
+            let level1 = document.createElement('div');
+            level1.className = 'tree-level';
+            for (let i = 0; i < 8; i++) {
+                let node = document.createElement('div');
+                node.className = 'node';
+                let stat = data.p[i];
+                let nodeNum = i + 1;
+                let htmlContent = `<div class="node-dot" style="background-color: ${stat ? stat.color : '#555'}"></div>`;
+                htmlContent += `<div class="node-label">P${nodeNum}</div>`;
+                if (nodeNum % 2 !== 0) {
+                    htmlContent += `<select class="gender-select" onchange="handleGenderChange(this, 'gender-p${nodeNum + 1}-${faseInfo.fase}')"><option value="Macho">Macho</option><option value="Hembra">Hembra</option></select>`;
+                } else {
+                    htmlContent += `<div class="gender-display" id="gender-p${nodeNum}-${faseInfo.fase}">Hembra</div>`;
+                }
+                node.innerHTML = htmlContent;
+                level1.appendChild(node);
+            }
+            faseDiv.appendChild(level1);
 
-      if (machos.length !== 3 || hembras.length !== 3) {
-        errorBox.innerText = `⚠️ Necesitas 3 Machos y 3 Hembras. Tienes ${machos.length} Machos y ${hembras.length} Hembras.`;
-        errorBox.style.display = 'block';
-        return;
-      }
-
-      let level1 = [
-        machos[0], hembras[0],
-        machos[1], hembras[1],
-        machos[2], hembras[2]
-      ];
-
-      const tree = document.getElementById('tree-result');
-      tree.innerHTML = '<svg id="svg-connections" class="connections-svg"></svg>';
-
-      let g = {};
-      g[7] = userGenders[7];
-      g[8] = g[7] === '♂' ? '♀' : '♂';
-      g[9] = g[8] === '♂' ? '♀' : '♂';
-      g[10] = g[9] === '♂' ? '♀' : '♂';
-      g[11] = g[10] === '♂' ? '♀' : '♂';
-
-      g[12] = userGenders[12];
-      g[13] = g[12] === '♂' ? '♀' : '♂';
-      g[14] = g[13] === '♂' ? '♀' : '♂';
-      g[15] = g[14] === '♂' ? '♀' : '♂';
-
-      g[16] = userGenders[16];
-      g[17] = g[16] === '♂' ? '♀' : '♂';
-      g[18] = g[17] === '♂' ? '♀' : '♂';
-
-      g[19] = userGenders[19];
-      g[20] = g[19] === '♂' ? '♀' : '♂';
-      g[21] = g[20] === '♂' ? '♀' : '♂';
-
-      let htmlL1 = `<div class="level" id="lvl-1">`;
-      for (let i = 0; i < 6; i++) {
-        let pkNum = i + 1;
-        let genderClass = level1[i].gender === '♂' ? 'male-text' : 'female-text';
-        htmlL1 += `
-          <div class="node" id="node-base-${pkNum}">
-            <input type="checkbox" class="node-check" title="Marcar como hecho" onclick="toggleNodeComplete(this, 'node-base-${pkNum}')">
-            <span class="step-label">Pokémon ${pkNum} <span class="${genderClass}">${level1[i].gender}</span></span>
-            <div class="stats-container">${renderBadge(level1[i].stat)}</div>
-            <div class="parents-info">
-              ${renderParentLine(pkNum, level1[i].stat)}
-            </div>
-          </div>`;
-      }
-      htmlL1 += `</div>`;
-
-      let c2 = [];
-      for (let i = 0; i < 5; i++) {
-        let p1Index = i + 1;
-        let p2Index = i + 2;
-        let pkNum = i + 7; 
-        let p1 = level1[i];
-        let p2 = level1[i+1];
-        c2.push({
-          stats: [p1.stat, p2.stat],
-          step: pkNum,
-          p1Index: p1Index,
-          p2Index: p2Index,
-          p1Stat: p1.stat,
-          p2Stat: p2.stat,
-          currentGender: g[pkNum],
-          isSelectable: pkNum === 7
-        });
-      }
-
-      let c3 = [];
-      for (let i = 0; i < 4; i++) {
-        let pkNum = i + 12; 
-        let p1Index = i + 7;
-        let p2Index = i + 8;
-        c3.push({
-          stats: Array.from(new Set([...c2[i].stats, ...c2[i+1].stats])),
-          step: pkNum,
-          p1Index: p1Index,
-          p2Index: p2Index,
-          b1: c2[i].stats[0],
-          b2: c2[i+1].stats[1],
-          currentGender: g[pkNum],
-          isSelectable: pkNum === 12
-        });
-      }
-
-      let c4 = [];
-      for (let i = 0; i < 3; i++) {
-        let pkNum = i + 16; 
-        let p1Index = i + 12;
-        let p2Index = i + 13;
-        c4.push({
-          stats: Array.from(new Set([...c3[i].stats, ...c3[i+1].stats])),
-          step: pkNum,
-          p1Index: p1Index,
-          p2Index: p2Index,
-          b1: c3[i].stats[0],
-          b2: c3[i+1].stats[c3[i+1].stats.length - 1],
-          currentGender: g[pkNum],
-          isSelectable: pkNum === 16
-        });
-      }
-
-      let c5 = [];
-      for (let i = 0; i < 2; i++) {
-        let pkNum = i + 19; 
-        let p1Index = i + 16;
-        let p2Index = i + 17;
-        c5.push({
-          stats: Array.from(new Set([...c4[i].stats, ...c4[i+1].stats])),
-          step: pkNum,
-          p1Index: p1Index,
-          p2Index: p2Index,
-          b1: c4[i].stats[0],
-          b2: c4[i+1].stats[c4[i+1].stats.length - 1],
-          currentGender: g[pkNum],
-          isSelectable: pkNum === 19
-        });
-      }
-
-      let finalPk = [{
-        stats: level1.map(x => x.stat),
-        step: 21,
-        p1Index: 19,
-        p2Index: 20,
-        b1: c5[0].stats[0],
-        b2: c5[1].stats[c5[1].stats.length - 1],
-        currentGender: g[21]
-      }];
-
-      treeStepsData = [];
-      
-      let n7 = c2[0];
-      let b1Obj7 = BANDS[n7.p1Stat];
-      let b2Obj7 = BANDS[n7.p2Stat];
-      
-      treeStepsData.push({
-        type: 'unified_static',
-        stepNumber: 1,
-        text: `Cruzar Pokémon ${n7.p1Index} (${b1Obj7.name} <span class="dot-icon" style="background-color: ${b1Obj7.color};"></span>) con Pokémon ${n7.p2Index} (${b2Obj7.name} <span class="dot-icon" style="background-color: ${b2Obj7.color};"></span>).`
-      });
-
-      treeStepsData.push({
-        type: 'unified_interactive',
-        stepNumber: 2,
-        targetNode: 7,
-        text: `Selecciona el género obtenido para nombrarlo Pokémon 7:`
-      });
-
-      let modalStepCounter = 3;
-      const allCrossNodes = [...c2, ...c3, ...c4, ...c5, ...finalPk];
-      
-      allCrossNodes.forEach((node, index) => {
-        if (index === 0) return; 
-
-        let b1Obj = BANDS[node.p1Stat || node.b1];
-        let b2Obj = BANDS[node.p2Stat || node.b2];
-        let targetGenderName = node.currentGender === '♂' ? 'MACHO (♂)' : 'HEMBRA (♀)';
-
-        if (node.step === 21) {
-          let b1Final = BANDS['AT'];
-          let b2Final = BANDS['SD'];
-          treeStepsData.push({
-            type: 'unified_static',
-            stepNumber: modalStepCounter,
-            text: `Cruzar Pokémon 19 (${b1Final.name} <span class="dot-icon" style="background-color: ${b1Final.color};"></span>) con Pokémon 20 (${b2Final.name} <span class="dot-icon" style="background-color: ${b2Final.color};"></span>).`
-          });
-        } else {
-          let isInteractive = (node.step === 12 || node.step === 16 || node.step === 19);
-          if (isInteractive) {
-            treeStepsData.push({
-              type: 'unified_static',
-              stepNumber: modalStepCounter,
-              text: `Cruzar Pokémon ${node.p1Index} (${b1Obj.name} <span class="dot-icon" style="background-color: ${b1Obj.color};"></span>) con Pokémon ${node.p2Index} (${b2Obj.name} <span class="dot-icon" style="background-color: ${b2Obj.color};"></span>).<br>Chequear que nazca <strong>${targetGenderName}</strong> y nombrarlo Pokémon ${node.step}.`
+            // Nivel 2 (P9 a P12)
+            let level2 = document.createElement('div');
+            level2.className = 'tree-level tree-level-2';
+            let l2Items = [ {id:'P9', s:data.p9, num:9}, {id:'P10', s:data.p10, num:10}, {id:'P11', s:data.p11, num:11}, {id:'P12', s:data.p12, num:12} ];
+            l2Items.forEach(item => {
+                let node = document.createElement('div');
+                node.className = 'node';
+                let htmlContent = `<div class="node-dot" style="background-color: ${item.s ? item.s.color : '#555'}"></div>`;
+                htmlContent += `<div class="node-label">${item.id}</div>`;
+                if (item.num % 2 !== 0) {
+                    htmlContent += `<select class="gender-select" onchange="handleGenderChange(this, 'gender-p${item.num + 1}-l2-${faseInfo.fase}')"><option value="Macho">Macho</option><option value="Hembra">Hembra</option></select>`;
+                } else {
+                    htmlContent += `<div class="gender-display" id="gender-p${item.num}-l2-${faseInfo.fase}">Hembra</div>`;
+                }
+                node.innerHTML = htmlContent;
+                level2.appendChild(node);
             });
-            modalStepCounter++;
-            treeStepsData.push({
-              type: 'unified_interactive',
-              stepNumber: modalStepCounter,
-              targetNode: node.step,
-              text: `Selecciona el género obtenido para nombrarlo Pokémon ${node.step}:`
+            faseDiv.appendChild(level2);
+
+            // Nivel 3 (P13 a P14)
+            let level3 = document.createElement('div');
+            level3.className = 'tree-level tree-level-3';
+            let l3Items = [ {id:'P13', s:data.p13, num:13}, {id:'P14', s:data.p14, num:14} ];
+            l3Items.forEach(item => {
+                let node = document.createElement('div');
+                node.className = 'node';
+                let htmlContent = `<div class="node-dot" style="background-color: ${item.s ? item.s.color : '#555'}"></div>`;
+                htmlContent += `<div class="node-label">${item.id}</div>`;
+                if (item.num % 2 !== 0) {
+                    htmlContent += `<select class="gender-select" onchange="handleGenderChange(this, 'gender-p${item.num + 1}-l3-${faseInfo.fase}')"><option value="Macho">Macho</option><option value="Hembra">Hembra</option></select>`;
+                } else {
+                    htmlContent += `<div class="gender-display" id="gender-p${item.num}-l3-${faseInfo.fase}">Hembra</div>`;
+                }
+                node.innerHTML = htmlContent;
+                level3.appendChild(node);
             });
-          } else {
-            treeStepsData.push({
-              type: 'unified_static',
-              stepNumber: modalStepCounter,
-              text: `Cruzar Pokémon ${node.p1Index} (${b1Obj.name} <span class="dot-icon" style="background-color: ${b1Obj.color};"></span>) con Pokémon ${node.p2Index} (${b2Obj.name} <span class="dot-icon" style="background-color: ${b2Obj.color};"></span>).<br>Chequear que nazca <strong>${targetGenderName}</strong> y nombrarlo Pokémon ${node.step}.`
-            });
-          }
-        }
-        modalStepCounter++;
-      });
+            faseDiv.appendChild(level3);
 
-      treeStepsData.push({
-        type: 'unified_static',
-        stepNumber: modalStepCounter,
-        text: `🎉 ¡Felicitaciones! Haz obtenido tu pokémon perfecto (6x31).`
-      });
+            // Nivel Final de Fase
+            let levelFinal = document.createElement('div');
+            levelFinal.className = 'tree-level tree-level-final';
+            let nodeFinal = document.createElement('div');
+            nodeFinal.className = 'node';
+            nodeFinal.style.borderColor = '#f1c40f';
+            let finalHtml = `<div class="node-label" style="margin-top:2px; color:#f1c40f; font-size: 13px;">F${faseInfo.fase}</div>`;
+            
+            if (faseInfo.fase === 1) {
+                finalHtml += `<select class="gender-select" onchange="handleF1GenderChange(this)"><option value="Macho">Macho</option><option value="Hembra">Hembra</option></select>`;
+            } else if (faseInfo.fase === 2) {
+                finalHtml += `<div class="gender-display" id="f5-f2-gender">Hembra</div>`;
+            } else if (faseInfo.fase === 3) {
+                finalHtml += `<select class="gender-select" onchange="handleF3GenderChange(this)"><option value="Macho">Macho</option><option value="Hembra">Hembra</option></select>`;
+            } else if (faseInfo.fase === 4) {
+                finalHtml += `<div class="gender-display" id="f5-f4-gender">Hembra</div>`;
+            }
 
-      function renderLevelBlock(lvlId, arr, renderFn) {
-        return `<div class="level" id="${lvlId}">${arr.map(renderFn).join('')}</div>`;
-      }
+            nodeFinal.innerHTML = finalHtml;
+            levelFinal.appendChild(nodeFinal);
+            faseDiv.appendChild(levelFinal);
 
-      let htmlC2 = renderLevelBlock("lvl-2", c2, n => {
-        let genderClass = n.currentGender === '♂' ? 'male-text' : 'female-text';
-        return `
-          <div class="node" id="node-step-${n.step}">
-            <input type="checkbox" class="node-check" title="Marcar como hecho" onclick="toggleNodeComplete(this, 'node-step-${n.step}')">
-            <span class="step-label">Pokémon ${n.step} <span class="${genderClass}">${n.currentGender}</span></span>
-            <div class="stats-container">${n.stats.map(renderBadge).join('')}</div>
-            <div class="parents-info">
-              ${renderParentLine(n.p1Index, n.p1Stat)}
-              ${renderParentLine(n.p2Index, n.p2Stat)}
-            </div>
-            ${n.isSelectable ? `
-              <select class="gender-selector" onchange="updateStepGender(${n.step}, this.value)">
-                <option value="♂" ${n.currentGender === '♂' ? 'selected' : ''}>Nació Macho (♂)</option>
-                <option value="♀" ${n.currentGender === '♀' ? 'selected' : ''}>Nació Hembra (♀)</option>
-              </select>
-            ` : `<span class="required-badge ${n.currentGender === '♂' ? 'req-male' : 'req-female'}">CRIAR: ${n.currentGender === '♂' ? 'MACHO ♂' : 'HEMBRA ♀'}</span>`}
-          </div>
-        `;
-      });
-
-      let htmlC3 = renderLevelBlock("lvl-3", c3, n => {
-        let genderClass = n.currentGender === '♂' ? 'male-text' : 'female-text';
-        return `
-          <div class="node" id="node-step-${n.step}">
-            <input type="checkbox" class="node-check" title="Marcar como hecho" onclick="toggleNodeComplete(this, 'node-step-${n.step}')">
-            <span class="step-label">Pokémon ${n.step} <span class="${genderClass}">${n.currentGender}</span></span>
-            <div class="stats-container">${n.stats.map(renderBadge).join('')}</div>
-            <div class="parents-info">
-              ${renderParentLine(n.p1Index, n.b1)}
-              ${renderParentLine(n.p2Index, n.b2)}
-            </div>
-            ${n.isSelectable ? `
-              <select class="gender-selector" onchange="updateStepGender(${n.step}, this.value)">
-                <option value="♂" ${n.currentGender === '♂' ? 'selected' : ''}>Nació Macho (♂)</option>
-                <option value="♀" ${n.currentGender === '♀' ? 'selected' : ''}>Nació Hembra (♀)</option>
-              </select>
-            ` : `<span class="required-badge ${n.currentGender === '♂' ? 'req-male' : 'req-female'}">CRIAR: ${n.currentGender === '♂' ? 'MACHO ♂' : 'HEMBRA ♀'}</span>`}
-          </div>
-        `;
-      });
-
-      let htmlC4 = renderLevelBlock("lvl-4", c4, n => {
-        let genderClass = n.currentGender === '♂' ? 'male-text' : 'female-text';
-        return `
-          <div class="node" id="node-step-${n.step}">
-            <input type="checkbox" class="node-check" title="Marcar como hecho" onclick="toggleNodeComplete(this, 'node-step-${n.step}')">
-            <span class="step-label">Pokémon ${n.step} <span class="${genderClass}">${n.currentGender}</span></span>
-            <div class="stats-container">${n.stats.map(renderBadge).join('')}</div>
-            <div class="parents-info">
-              ${renderParentLine(n.p1Index, n.b1)}
-              ${renderParentLine(n.p2Index, n.b2)}
-            </div>
-            ${n.isSelectable ? `
-              <select class="gender-selector" onchange="updateStepGender(${n.step}, this.value)">
-                <option value="♂" ${n.currentGender === '♂' ? 'selected' : ''}>Nació Macho (♂)</option>
-                <option value="♀" ${n.currentGender === '♀' ? 'selected' : ''}>Nació Hembra (♀)</option>
-              </select>
-            ` : `<span class="required-badge ${n.currentGender === '♂' ? 'req-male' : 'req-female'}">CRIAR: ${n.currentGender === '♂' ? 'MACHO ♂' : 'HEMBRA ♀'}</span>`}
-          </div>
-        `;
-      });
-
-      let htmlC5 = renderLevelBlock("lvl-5", c5, n => {
-        let genderClass = n.currentGender === '♂' ? 'male-text' : 'female-text';
-        return `
-          <div class="node" id="node-step-${n.step}">
-            <input type="checkbox" class="node-check" title="Marcar como hecho" onclick="toggleNodeComplete(this, 'node-step-${n.step}')">
-            <span class="step-label">Pokémon ${n.step} <span class="${genderClass}">${n.currentGender}</span></span>
-            <div class="stats-container">${n.stats.map(renderBadge).join('')}</div>
-            <div class="parents-info">
-              ${renderParentLine(n.p1Index, n.b1)}
-              ${renderParentLine(n.p2Index, n.b2)}
-            </div>
-            ${n.isSelectable ? `
-              <select class="gender-selector" onchange="updateStepGender(${n.step}, this.value)">
-                <option value="♂" ${n.currentGender === '♂' ? 'selected' : ''}>Nació Macho (♂)</option>
-                <option value="♀" ${n.currentGender === '♀' ? 'selected' : ''}>Nació Hembra (♀)</option>
-              </select>
-            ` : `<span class="required-badge ${n.currentGender === '♂' ? 'req-male' : 'req-female'}">CRIAR: ${n.currentGender === '♂' ? 'MACHO ♂' : 'HEMBRA ♀'}</span>`}
-          </div>
-        `;
-      });
-
-      let htmlFinal = renderLevelBlock("lvl-6", finalPk, n => {
-        let genderClass = n.currentGender === '♂' ? 'male-text' : 'female-text';
-        return `
-          <div class="node" id="node-step-${n.step}" style="min-width:230px;">
-            <input type="checkbox" class="node-check" title="Marcar como hecho" onclick="toggleNodeComplete(this, 'node-step-${n.step}')">
-            <span class="step-label">Pokémon ${n.step}: Perfecto (6x31) <span class="${genderClass}">${n.currentGender}</span></span>
-            <div class="stats-container">${n.stats.map(renderBadge).join('')}</div>
-            <div class="parents-info">
-              ${renderParentLine(n.p1Index, n.b1)}
-              ${renderParentLine(n.p2Index, n.b2)}
-            </div>
-          </div>
-        `;
-      });
-
-      tree.innerHTML += htmlL1 + htmlC2 + htmlC3 + htmlC4 + htmlC5 + htmlFinal;
-
-      for (const nodeId in completedNodes) {
-        if (completedNodes[nodeId]) {
-          const nodeEl = document.getElementById(nodeId);
-          if (nodeEl) {
-            nodeEl.classList.add('completed');
-            const chk = nodeEl.querySelector('.node-check');
-            if (chk) chk.checked = true;
-          }
-        }
-      }
-
-      setTimeout(dibujarLineasOrtogonales, 50);
-      calcularPresupuesto();
-    }
-
-    function abrirModalPasos() {
-      generarArbolInteligenteSilencioso();
-      if (treeStepsData.length === 0) return;
-      currentModalStep = 1;
-      document.getElementById('steps-modal').style.display = 'flex';
-      renderizarPasoModal();
-    }
-
-    function cerrarModalPasos() {
-      document.getElementById('steps-modal').style.display = 'none';
-    }
-
-    function cambiarPasoModal(dir) {
-      if (currentModalStep === treeStepsData.length && dir > 0) {
-        cerrarModalPasos();
-        return;
-      }
-      currentModalStep += dir;
-      if (currentModalStep < 1) currentModalStep = 1;
-      if (currentModalStep > treeStepsData.length) currentModalStep = treeStepsData.length;
-      renderizarPasoModal();
-    }
-
-    function renderizarPasoModal() {
-      const stepObj = treeStepsData[currentModalStep - 1];
-      document.getElementById('modal-step-title').innerText = `PASO ${currentModalStep} de ${treeStepsData.length}`;
-      
-      const contentBox = document.getElementById('modal-content-box');
-      
-      if (stepObj.type === 'unified_interactive') {
-        let currentG = userGenders[stepObj.targetNode] || '♂';
-        contentBox.innerHTML = `
-          <div>${stepObj.text}</div>
-          <div class="radio-group-modal">
-            <label><input type="radio" name="modal-gender-${stepObj.targetNode}" value="♂" ${currentG === '♂' ? 'checked' : ''} onchange="actualizarGeneroModal(${stepObj.targetNode}, '♂')"> MACHO (♂)</label>
-            <label><input type="radio" name="modal-gender-${stepObj.targetNode}" value="♀" ${currentG === '♀' ? 'checked' : ''} onchange="actualizarGeneroModal(${stepObj.targetNode}, '♀')"> HEMBRA (♀)</label>
-          </div>
-        `;
-      } else {
-        contentBox.innerHTML = `<div>${stepObj.text}</div>`;
-      }
-
-      document.getElementById('modal-btn-prev').disabled = (currentModalStep === 1);
-      const nextBtn = document.getElementById('modal-btn-next');
-      if (currentModalStep === treeStepsData.length) {
-        nextBtn.innerText = "FINALIZAR";
-      } else {
-        nextBtn.innerText = "SIGUIENTE";
-      }
-    }
-
-    function actualizarGeneroModal(stepNum, newGender) {
-      userGenders[stepNum] = newGender;
-      generarArbolInteligenteSilencioso();
-      renderizarPasoModal();
-    }
-
-    function generarArbolInteligenteSilencioso() {
-      let pInput = [];
-      for (let i = 1; i <= 6; i++) {
-        pInput.push({
-          stat: document.getElementById(`stat-${i}`).value,
-          gender: document.getElementById(`gender-${i}`).value
+            wrapper.appendChild(faseDiv);
         });
-      }
 
-      let machos = pInput.filter(x => x.gender === '♂');
-      let hembras = pInput.filter(x => x.gender === '♀');
-      if (machos.length !== 3 || hembras.length !== 3) return;
+        // Fase 5
+        let f1Data = calcularAsignacionesFase(counts, 1, 1);
+        let f2Data = calcularAsignacionesFase(counts, 2, 2);
+        let f3Data = calcularAsignacionesFase(counts, 2, 3);
+        let f4Data = calcularAsignacionesFase(counts, 1, 4);
 
-      let level1 = [machos[0], hembras[0], machos[1], hembras[1], machos[2], hembras[2]];
+        let f5Color = f1Data.f ? f1Data.f.color : '#555';
+        let f6Color = f4Data.f ? f4Data.f.color : '#555';
 
-      let g = {};
-      g[7] = userGenders[7];
-      g[8] = g[7] === '♂' ? '♀' : '♂';
-      g[9] = g[8] === '♂' ? '♀' : '♂';
-      g[10] = g[9] === '♂' ? '♀' : '♂';
-      g[11] = g[10] === '♂' ? '♀' : '♂';
-
-      g[12] = userGenders[12];
-      g[13] = g[12] === '♂' ? '♀' : '♂';
-      g[14] = g[13] === '♂' ? '♀' : '♂';
-      g[15] = g[14] === '♂' ? '♀' : '♂';
-
-      g[16] = userGenders[16];
-      g[17] = g[16] === '♂' ? '♀' : '♂';
-      g[18] = g[17] === '♂' ? '♀' : '♂';
-
-      g[19] = userGenders[19];
-      g[20] = g[19] === '♂' ? '♀' : '♂';
-      g[21] = g[20] === '♂' ? '♀' : '♂';
-
-      let c2 = [];
-      for (let i = 0; i < 5; i++) {
-        let pkNum = i + 7;
-        c2.push({ stats: [level1[i].stat, level1[i+1].stat], step: pkNum, p1Index: i+1, p2Index: i+2, p1Stat: level1[i].stat, p2Stat: level1[i+1].stat, currentGender: g[pkNum], isSelectable: pkNum === 7 });
-      }
-
-      let c3 = [];
-      for (let i = 0; i < 4; i++) {
-        let pkNum = i + 12;
-        c3.push({ stats: Array.from(new Set([...c2[i].stats, ...c2[i+1].stats])), step: pkNum, p1Index: i+7, p2Index: i+8, b1: c2[i].stats[0], b2: c2[i+1].stats[1], currentGender: g[pkNum], isSelectable: pkNum === 12 });
-      }
-
-      let c4 = [];
-      for (let i = 0; i < 3; i++) {
-        let pkNum = i + 16;
-        c4.push({ stats: Array.from(new Set([...c3[i].stats, ...c3[i+1].stats])), step: pkNum, p1Index: i+12, p2Index: i+13, b1: c3[i].stats[0], b2: c3[i+1].stats[c3[i+1].stats.length - 1], currentGender: g[pkNum], isSelectable: pkNum === 16 });
-      }
-
-      let c5 = [];
-      for (let i = 0; i < 2; i++) {
-        let pkNum = i + 19;
-        c5.push({ stats: Array.from(new Set([...c4[i].stats, ...c4[i+1].stats])), step: pkNum, p1Index: i+16, p2Index: i+17, b1: c4[i].stats[0], b2: c4[i+1].stats[c4[i+1].stats.length - 1], currentGender: g[pkNum], isSelectable: pkNum === 19 });
-      }
-
-      let finalPk = [{ stats: level1.map(x => x.stat), step: 21, p1Index: 19, p2Index: 20, b1: c5[0].stats[0], b2: c5[1].stats[c5[1].stats.length - 1], currentGender: g[21] }];
-
-      treeStepsData = [];
-      
-      let n7 = c2[0];
-      let b1Obj7 = BANDS[n7.p1Stat];
-      let b2Obj7 = BANDS[n7.p2Stat];
-
-      treeStepsData.push({
-        type: 'unified_static',
-        stepNumber: 1,
-        text: `Cruzar Pokémon ${n7.p1Index} (${b1Obj7.name} <span class="dot-icon" style="background-color: ${b1Obj7.color};"></span>) con Pokémon ${n7.p2Index} (${b2Obj7.name} <span class="dot-icon" style="background-color: ${b2Obj7.color};"></span>).`
-      });
-
-      treeStepsData.push({
-        type: 'unified_interactive',
-        stepNumber: 2,
-        targetNode: 7,
-        text: `Selecciona el género obtenido para nombrarlo Pokémon 7:`
-      });
-
-      let modalStepCounter = 3;
-      const allCrossNodes = [...c2, ...c3, ...c4, ...c5, ...finalPk];
-      
-      allCrossNodes.forEach((node, index) => {
-        if (index === 0) return;
-
-        let b1Obj = BANDS[node.p1Stat || node.b1];
-        let b2Obj = BANDS[node.p2Stat || node.b2];
-        let targetGenderName = node.currentGender === '♂' ? 'MACHO (♂)' : 'HEMBRA (♀)';
-
-        if (node.step === 21) {
-          let b1Final = BANDS['AT'];
-          let b2Final = BANDS['SD'];
-          treeStepsData.push({
-            type: 'unified_static',
-            stepNumber: modalStepCounter,
-            text: `Cruzar Pokémon 19 (${b1Final.name} <span class="dot-icon" style="background-color: ${b1Final.color};"></span>) con Pokémon 20 (${b2Final.name} <span class="dot-icon" style="background-color: ${b2Final.color};"></span>).`
-          });
-        } else {
-          let isInteractive = (node.step === 12 || node.step === 16 || node.step === 19);
-          if (isInteractive) {
-            treeStepsData.push({
-              type: 'unified_static',
-              stepNumber: modalStepCounter,
-              text: `Cruzar Pokémon ${node.p1Index} (${b1Obj.name} <span class="dot-icon" style="background-color: ${b1Obj.color};"></span>) con Pokémon ${node.p2Index} (${b2Obj.name} <span class="dot-icon" style="background-color: ${b2Obj.color};"></span>).<br>Chequear que nazca <strong>${targetGenderName}</strong> y nombrarlo Pokémon ${node.step}.`
-            });
-            modalStepCounter++;
-            treeStepsData.push({
-              type: 'unified_interactive',
-              stepNumber: modalStepCounter,
-              targetNode: node.step,
-              text: `Selecciona el género obtenido para nombrarlo Pokémon ${node.step}:`
-            });
-          } else {
-            treeStepsData.push({
-              type: 'unified_static',
-              stepNumber: modalStepCounter,
-              text: `Cruzar Pokémon ${node.p1Index} (${b1Obj.name} <span class="dot-icon" style="background-color: ${b1Obj.color};"></span>) con Pokémon ${node.p2Index} (${b2Obj.name} <span class="dot-icon" style="background-color: ${b2Obj.color};"></span>).<br>Chequear que nazca <strong>${targetGenderName}</strong> y nombrarlo Pokémon ${node.step}.`
-            });
-          }
-        }
-        modalStepCounter++;
-      });
-
-      treeStepsData.push({
-        type: 'unified_static',
-        stepNumber: modalStepCounter,
-        text: `🎉 ¡Felicitaciones! Haz obtenido tu pokémon perfecto (6x31).`
-      });
-    }
-
-    function dibujarLineasOrtogonales() {
-      const svg = document.getElementById('svg-connections');
-      const tree = document.getElementById('tree-result');
-      if (!svg || !tree) return;
-
-      svg.innerHTML = '';
-      const treeRect = tree.getBoundingClientRect();
-
-      function connectNodesOrthogonal(idParent1, idParent2, idChild) {
-        const p1 = document.getElementById(idParent1);
-        const p2 = document.getElementById(idParent2);
-        const c = document.getElementById(idChild);
-        if (!p1 || !p2 || !c) return;
-
-        const r1 = p1.getBoundingClientRect();
-        const r2 = p2.getBoundingClientRect();
-        const rc = c.getBoundingClientRect();
-
-        const x1 = (r1.left + r1.right) / 2 - treeRect.left;
-        const y1 = r1.bottom - treeRect.top;
-
-        const x2 = (r2.left + r2.right) / 2 - treeRect.left;
-        const y2 = r2.bottom - treeRect.top;
-
-        const xc = (rc.left + rc.right) / 2 - treeRect.left;
-        const yc = rc.top - treeRect.top;
-
-        const midY = y1 + (yc - y1) / 2;
-
-        const pathData = `
-          M ${x1} ${y1} 
-          V ${midY} 
-          H ${x2} 
-          V ${y2}
-          M ${xc} ${midY} 
-          V ${yc}
+        let fase5Div = document.createElement('div');
+        fase5Div.className = 'fase-container';
+        fase5Div.innerHTML = `
+            <h2>FASE 5</h2>
+            <div class="tree-level" style="justify-content: space-around; padding: 0 40px; margin-bottom: 20px;">
+                <div class="node"><div class="node-dot" style="background-color: ${f1Data.f ? f1Data.f.color : '#555'}"></div><div class="node-label">F1</div><div class="gender-display" id="f5-f1-display">Macho</div></div>
+                <div class="node"><div class="node-dot" style="background-color: ${f2Data.f ? f2Data.f.color : '#555'}"></div><div class="node-label">F2</div><div class="gender-display" id="f5-f2-gender">Hembra</div></div>
+                <div class="node"><div class="node-dot" style="background-color: ${f3Data.f ? f3Data.f.color : '#555'}"></div><div class="node-label">F3</div><div class="gender-display" id="f5-f3-display">Macho</div></div>
+                <div class="node"><div class="node-dot" style="background-color: ${f4Data.f ? f4Data.f.color : '#555'}"></div><div class="node-label">F4</div><div class="gender-display" id="f5-f4-gender">Hembra</div></div>
+            </div>
+            <div class="fase-5-level" style="margin-bottom: 20px;">
+                <div class="node" style="border-color: #3498db;">
+                    <div class="node-dot" style="background-color: ${f5Color};"></div>
+                    <div class="node-label" style="color: #3498db;">F5</div>
+                    <select class="gender-select" onchange="handleF5GenderChange(this)">
+                        <option value="Macho">Macho</option>
+                        <option value="Hembra">Hembra</option>
+                    </select>
+                </div>
+                <div class="node" style="border-color: #3498db;">
+                    <div class="node-dot" style="background-color: ${f6Color};"></div>
+                    <div class="node-label" style="color: #3498db;">F6</div>
+                    <div class="gender-display" id="f5-f6-display">Hembra</div>
+                </div>
+            </div>
+            <div class="tree-level tree-level-final">
+                <div class="node" style="border-color: #f1c40f; width: 110px; justify-content: center; gap: 8px;">
+                    <div class="node-label" style="color:#f1c40f; font-size: 12px; margin: 0;">Full IVs</div>
+                    <div style="font-size: 18px; line-height: 1; margin: 0;">🏆</div>
+                </div>
+            </div>
         `;
-
-        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-        path.setAttribute('d', pathData);
-        path.setAttribute('stroke', '#555555');
-        path.setAttribute('stroke-width', '2');
-        path.setAttribute('fill', 'none');
-        path.setAttribute('stroke-linejoin', 'round');
-
-        svg.appendChild(path);
-      }
-
-      for(let i=1; i<=5; i++) connectNodesOrthogonal(`node-base-${i}`, `node-base-${i+1}`, `node-step-${i+6}`);
-      for(let i=0; i<4; i++) connectNodesOrthogonal(`node-step-${i+7}`, `node-step-${i+8}`, `node-step-${i+12}`);
-      for(let i=0; i<3; i++) connectNodesOrthogonal(`node-step-${i+12}`, `node-step-${i+13}`, `node-step-${i+16}`);
-      connectNodesOrthogonal(`node-step-16`, `node-step-17`, `node-step-19`);
-      connectNodesOrthogonal(`node-step-17`, `node-step-18`, `node-step-20`);
-      connectNodesOrthogonal(`node-step-19`, `node-step-20`, `node-step-21`);
+        wrapper.appendChild(fase5Div);
     }
 
-    window.addEventListener('resize', dibujarLineasOrtogonales);
-    calcularPresupuesto();
-  </script>
+    function resetChecks() {
+        document.querySelectorAll('.stat-checkbox').forEach(chk => chk.checked = false);
+        document.getElementById('error-container').innerHTML = '';
+        document.getElementById('fases-wrapper').innerHTML = '';
+        actualizarLogEnVivo();
+    }
+
+    window.onload = () => {
+        initRecoleccion();
+        actualizarLogEnVivo();
+        initAutocompletado();
+    };
+</script>
+
 </body>
 </html>
