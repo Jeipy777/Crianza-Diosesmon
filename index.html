@@ -221,6 +221,56 @@
         .tree-level-3 { justify-content: space-around; padding: 0 120px; }
         .tree-level-final { justify-content: center; }
         .fase-5-level { display: flex; justify-content: space-around; margin-bottom: 25px; padding: 0 100px; }
+
+        /* Sección de Redes Sociales / Footer */
+        .social-footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+
+        .social-footer p {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #f1c40f;
+        }
+
+        .social-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .social-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            border-radius: 8px;
+            color: white;
+            font-weight: bold;
+            text-decoration: none;
+            font-size: 15px;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+        }
+
+        .social-btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        .btn-twitch {
+            background-color: #9146FF;
+        }
+
+        .btn-youtube {
+            background-color: #FF0000;
+        }
     </style>
 </head>
 <body>
@@ -228,26 +278,26 @@
 <div class="container">
     <h1>Guía Interactiva de Crianza Pokémon</h1>
 
-    <!-- Botones de Navegación -->
+    <!-- Botones de Navegación (GRUPOS HUEVOS activo por defecto) -->
     <div class="main-nav">
-        <button class="nav-btn" onclick="switchView('grupos')">GRUPOS HUEVOS</button>
-        <button class="nav-btn active" onclick="switchView('esquema')">ESQUEMA CRIANZA</button>
+        <button class="nav-btn active" onclick="switchView('grupos')">GRUPOS HUEVOS</button>
+        <button class="nav-btn" onclick="switchView('esquema')">ESQUEMA CRIANZA</button>
     </div>
 
-    <!-- VISTA 1: GRUPOS HUEVOS -->
-    <div id="view-grupos" class="view-section">
+    <!-- VISTA 1: GRUPOS HUEVOS (Activa por defecto) -->
+    <div id="view-grupos" class="view-section active">
         <div class="egg-groups-container">
             <h2>Buscador de Compatibilidad por Grupos Huevo</h2>
             <div class="search-controls">
-                <input type="text" id="pokemon-search" class="search-input" placeholder="Ej. dratini, pikachu..." value="dratini" list="pokemon-list">
+                <input type="text" id="pokemon-search" class="search-input" placeholder="Ej. dratini, pikachu..." value="" list="pokemon-list">
                 <datalist id="pokemon-list"></datalist>
 
                 <select id="gen-filter" class="gen-select">
-                    <option value="all">Todas las Generaciones</option>
+                    <option value="all" selected>Todas las Generaciones</option>
                     <option value="1">Hasta Gen 1</option>
                     <option value="2">Hasta Gen 2</option>
                     <option value="3">Hasta Gen 3</option>
-                    <option value="4" selected>Hasta Gen 4</option>
+                    <option value="4">Hasta Gen 4</option>
                     <option value="5">Hasta Gen 5</option>
                     <option value="6">Hasta Gen 6</option>
                     <option value="7">Hasta Gen 7</option>
@@ -258,13 +308,13 @@
             </div>
             <div id="egg-groups-info" style="text-align: center; margin-bottom: 15px; color: #f1c40f; font-weight: bold;"></div>
             <div id="pokemon-results" class="pokemon-grid">
-                <p style="grid-column: 1/-1; text-align: center; color: #888;">Cargando buscador...</p>
+                <p style="grid-column: 1/-1; text-align: center; color: #888;">Escribe el nombre de un Pokémon y presiona Buscar para ver sus compatibles.</p>
             </div>
         </div>
     </div>
 
     <!-- VISTA 2: ESQUEMA CRIANZA -->
-    <div id="view-esquema" class="view-section active">
+    <div id="view-esquema" class="view-section">
         <div class="recoleccion-section">
             <h2>RECOLECCIÓN - ASIGNACIÓN DE VALORES</h2>
             <div class="btn-container">
@@ -279,6 +329,19 @@
             <div id="error-container"></div>
         </div>
         <div id="fases-wrapper"></div>
+    </div>
+
+    <!-- SECCIÓN SÍGUEME EN REDES -->
+    <div class="social-footer">
+        <p>¡Sígueme en mis redes!</p>
+        <div class="social-buttons">
+            <a href="https://www.twitch.tv/jeipy777" target="_blank" class="social-btn btn-twitch">
+                🎮 Twitch
+            </a>
+            <a href="https://www.youtube.com/@jeipy_777" target="_blank" class="social-btn btn-youtube">
+                ▶️ YouTube
+            </a>
+        </div>
     </div>
 </div>
 
@@ -315,7 +378,6 @@
                 option.value = p.name;
                 datalist.appendChild(option);
             });
-            buscarCompatibles();
         } catch (e) {
             console.error("Error al cargar autocompletado", e);
         }
@@ -327,7 +389,12 @@
         const resultsContainer = document.getElementById('pokemon-results');
         const infoContainer = document.getElementById('egg-groups-info');
 
-        if (!query) return;
+        if (!query) {
+            resultsContainer.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: #e74c3c;">⚠️ Por favor, ingresa el nombre de un Pokémon para buscar.</p>`;
+            infoContainer.innerHTML = '';
+            return;
+        }
+
         resultsContainer.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: #aaa;">Buscando información...</p>`;
         infoContainer.innerHTML = '';
 
