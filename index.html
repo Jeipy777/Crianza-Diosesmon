@@ -337,13 +337,13 @@
 <div class="container">
     <h1>Guía Interactiva de Crianza Pokémon</h1>
 
-    <!-- Botones de Navegación (GRUPOS HUEVOS activo por defecto) -->
+    <!-- Botones de Navegación -->
     <div class="main-nav">
         <button class="nav-btn active" onclick="switchView('grupos')">GRUPOS HUEVOS</button>
         <button class="nav-btn" onclick="switchView('esquema')">ESQUEMA CRIANZA</button>
     </div>
 
-    <!-- VISTA 1: GRUPOS HUEVOS (Activa por defecto) -->
+    <!-- VISTA 1: GRUPOS HUEVOS -->
     <div id="view-grupos" class="view-section active">
         <div class="egg-groups-container">
             <h2>Buscador de Compatibilidad por Grupos Huevo</h2>
@@ -449,7 +449,7 @@
         const infoContainer = document.getElementById('egg-groups-info');
 
         if (!query) {
-            resultsContainer.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: #e74c3c;">⚠ Por favor, ingresa el nombre de un Pokémon para buscar.</p>`;
+            resultsContainer.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: #e74c3c;">⚠️ Por favor, ingresa el nombre de un Pokémon para buscar.</p>`;
             infoContainer.innerHTML = '';
             return;
         }
@@ -610,8 +610,6 @@
         let asignacionesP = new Array(8).fill(null);
         let statsOrdenados = [...statsConfig].sort((a, b) => counts[b.id] - counts[a.id]);
 
-        let primaryStat = statsOrdenados[0];
-        let secondaryStat = statsOrdenados[1];
         let thirdStat = statsOrdenados[2];
         
         let statsConValor1 = statsConfig.filter(s => counts[s.id] === 1);
@@ -623,8 +621,10 @@
         if (faseIndex === 2 || faseIndex === 3) targetStat = color2;
         else if (faseIndex === 4) targetStat = color1Plus;
 
+        let primaryStat = statsOrdenados[0];
+        let secondaryStat = statsOrdenados[1];
+
         if (faseIndex === 4) {
-            // Corrección absoluta basada en el valor real seleccionado (16 y 8)
             let stat16 = statsConfig.find(s => {
                 let chk = document.querySelector(`.stat-checkbox[data-stat="${s.id}"][data-value="16"]`);
                 return chk && chk.checked;
@@ -651,41 +651,6 @@
         return { p: asignacionesP, p9: asignacionesP[1], p10: asignacionesP[3], p11: asignacionesP[5], p12: asignacionesP[7], p13: asignacionesP[3], p14: asignacionesP[7], f: asignacionesP[7] };
     }
 
-    function handleGenderChange(selectElement, targetDisplayId) {
-        const selectedVal = selectElement.value;
-        const targetDisplay = document.getElementById(targetDisplayId);
-        if (targetDisplay) targetDisplay.innerText = selectedVal === 'Macho' ? 'Hembra' : 'Macho';
-    }
-
-    function handleF1GenderChange(selectElement) {
-        const val = selectElement.value;
-        const oppVal = val === 'Macho' ? 'Hembra' : 'Macho';
-        const f2Display = document.getElementById('f5-f2-gender');
-        if (f2Display) f2Display.innerText = oppVal;
-        const f5f1 = document.getElementById('f5-f1-display');
-        const f5f2 = document.getElementById('f5-f2-display');
-        if (f5f1) f5f1.innerText = val;
-        if (f5f2) f5f2.innerText = oppVal;
-    }
-
-    function handleF3GenderChange(selectElement) {
-        const val = selectElement.value;
-        const oppVal = val === 'Macho' ? 'Hembra' : 'Macho';
-        const f4Display = document.getElementById('f5-f4-gender');
-        if (f4Display) f4Display.innerText = oppVal;
-        const f5f3 = document.getElementById('f5-f3-display');
-        const f5f4 = document.getElementById('f5-f4-display');
-        if (f5f3) f5f3.innerText = val;
-        if (f5f4) f5f4.innerText = oppVal;
-    }
-
-    function handleF5GenderChange(selectElement) {
-        const val = selectElement.value;
-        const oppVal = val === 'Macho' ? 'Hembra' : 'Macho';
-        const f6Display = document.getElementById('f5-f6-display');
-        if (f6Display) f6Display.innerText = oppVal;
-    }
-
     function handleNodeCheckChange(checkbox, nodeId) {
         const nodeEl = document.getElementById(nodeId);
         if (nodeEl) {
@@ -709,6 +674,40 @@
         }
     }
 
+    function actualizarGenerosYCadenas() {
+        // Fase 1 y Fase 2 (F1 elige, F2 invierte)
+        const f1Select = document.getElementById('select-f1-final');
+        const f2Display = document.getElementById('select-f2-final');
+        const f1Val = f1Select ? f1Select.value : 'Macho';
+        const f2Val = f1Val === 'Macho' ? 'Hembra' : 'Macho';
+        if (f2Display) f2Display.innerText = f2Val;
+
+        // Fase 3 y Fase 4 (F3 elige, F4 invierte)
+        const f3Select = document.getElementById('select-f3-final');
+        const f4Display = document.getElementById('select-f4-final');
+        const f3Val = f3Select ? f3Select.value : 'Macho';
+        const f4Val = f3Val === 'Macho' ? 'Hembra' : 'Macho';
+        if (f4Display) f4Display.innerText = f4Val;
+
+        // Sincronizar Fase 5 (F1, F2, F3, F4 copian directamente de F1, F2, F3, F4 de las fases anteriores)
+        const f5f1 = document.getElementById('f5-f1-display');
+        const f5f2 = document.getElementById('f5-f2-display');
+        const f5f3 = document.getElementById('f5-f3-display');
+        const f5f4 = document.getElementById('f5-f4-display');
+
+        if (f5f1) f5f1.innerText = f1Val;
+        if (f5f2) f5f2.innerText = f2Val;
+        if (f5f3) f5f3.innerText = f3Val;
+        if (f5f4) f5f4.innerText = f4Val;
+
+        // Fase 5 (F5 elige, F6 invierte)
+        const f5Select = document.getElementById('f5-select-val');
+        const f6Display = document.getElementById('f5-f6-display');
+        const f5Val = f5Select ? f5Select.value : 'Macho';
+        const f6Val = f5Val === 'Macho' ? 'Hembra' : 'Macho';
+        if (f6Display) f6Display.innerText = f6Val;
+    }
+
     function renderFases(counts) {
         const wrapper = document.getElementById('fases-wrapper');
         wrapper.innerHTML = '';
@@ -725,7 +724,7 @@
                 </div>
             `;
 
-            // Nivel 1 (P1 a P8)
+            // Nivel 1 (P1 a P8) - Nodos impares selectores, pares automáticos fijos en Hembra
             let level1 = document.createElement('div');
             level1.className = 'tree-level';
             for (let i = 0; i < 8; i++) {
@@ -748,9 +747,9 @@
                 `;
 
                 if (nodeNum % 2 !== 0) {
-                    htmlContent += `<select class="gender-select" onchange="handleGenderChange(this, 'gender-p${nodeNum + 1}-${faseInfo.fase}')"><option value="Macho">Macho</option><option value="Hembra">Hembra</option></select>`;
+                    htmlContent += `<div class="gender-display">Macho</div>`;
                 } else {
-                    htmlContent += `<div class="gender-display" id="gender-p${nodeNum}-${faseInfo.fase}">Hembra</div>`;
+                    htmlContent += `<div class="gender-display">Hembra</div>`;
                 }
                 node.innerHTML = htmlContent;
                 level1.appendChild(node);
@@ -775,13 +774,8 @@
                         </div>
                         <input type="checkbox" class="node-check" onchange="handleNodeCheckChange(this, '${uniqueId}')">
                     </div>
+                    <div class="gender-display">${item.num % 2 !== 0 ? 'Macho' : 'Hembra'}</div>
                 `;
-
-                if (item.num % 2 !== 0) {
-                    htmlContent += `<select class="gender-select" onchange="handleGenderChange(this, 'gender-p${item.num + 1}-l2-${faseInfo.fase}')"><option value="Macho">Macho</option><option value="Hembra">Hembra</option></select>`;
-                } else {
-                    htmlContent += `<div class="gender-display" id="gender-p${item.num}-l2-${faseInfo.fase}">Hembra</div>`;
-                }
                 node.innerHTML = htmlContent;
                 level2.appendChild(node);
             });
@@ -805,13 +799,8 @@
                         </div>
                         <input type="checkbox" class="node-check" onchange="handleNodeCheckChange(this, '${uniqueId}')">
                     </div>
+                    <div class="gender-display">${item.num % 2 !== 0 ? 'Macho' : 'Hembra'}</div>
                 `;
-
-                if (item.num % 2 !== 0) {
-                    htmlContent += `<select class="gender-select" onchange="handleGenderChange(this, 'gender-p${item.num + 1}-l3-${faseInfo.fase}')"><option value="Macho">Macho</option><option value="Hembra">Hembra</option></select>`;
-                } else {
-                    htmlContent += `<div class="gender-display" id="gender-p${item.num}-l3-${faseInfo.fase}">Hembra</div>`;
-                }
                 node.innerHTML = htmlContent;
                 level3.appendChild(node);
             });
@@ -836,13 +825,13 @@
             `;
             
             if (faseInfo.fase === 1) {
-                finalHtml += `<select class="gender-select" onchange="handleF1GenderChange(this)"><option value="Macho">Macho</option><option value="Hembra">Hembra</option></select>`;
+                finalHtml += `<select class="gender-select" id="select-f1-final" onchange="actualizarGenerosYCadenas()"><option value="Macho">Macho</option><option value="Hembra">Hembra</option></select>`;
             } else if (faseInfo.fase === 2) {
-                finalHtml += `<div class="gender-display" id="f5-f2-gender">Hembra</div>`;
+                finalHtml += `<div class="gender-display" id="select-f2-final">Hembra</div>`;
             } else if (faseInfo.fase === 3) {
-                finalHtml += `<select class="gender-select" onchange="handleF3GenderChange(this)"><option value="Macho">Macho</option><option value="Hembra">Hembra</option></select>`;
+                finalHtml += `<select class="gender-select" id="select-f3-final" onchange="actualizarGenerosYCadenas()"><option value="Macho">Macho</option><option value="Hembra">Hembra</option></select>`;
             } else if (faseInfo.fase === 4) {
-                finalHtml += `<div class="gender-display" id="f5-f4-gender">Hembra</div>`;
+                finalHtml += `<div class="gender-display" id="select-f4-final">Hembra</div>`;
             }
 
             nodeFinal.innerHTML = finalHtml;
@@ -876,7 +865,7 @@
                 </div>
                 <div class="node" id="node-f5-f2">
                     <div class="node-top-row"><div class="node-info-left"><div class="node-dot" style="background-color: ${f2Data.f ? f2Data.f.color : '#555'}"></div><div class="node-label">F2</div></div><input type="checkbox" class="node-check" onchange="handleNodeCheckChange(this, 'node-f5-f2')"></div>
-                    <div class="gender-display" id="f5-f2-gender">Hembra</div>
+                    <div class="gender-display" id="f5-f2-display">Hembra</div>
                 </div>
                 <div class="node" id="node-f5-f3">
                     <div class="node-top-row"><div class="node-info-left"><div class="node-dot" style="background-color: ${f3Data.f ? f3Data.f.color : '#555'}"></div><div class="node-label">F3</div></div><input type="checkbox" class="node-check" onchange="handleNodeCheckChange(this, 'node-f5-f3')"></div>
@@ -884,13 +873,13 @@
                 </div>
                 <div class="node" id="node-f5-f4">
                     <div class="node-top-row"><div class="node-info-left"><div class="node-dot" style="background-color: ${f4Data.f ? f4Data.f.color : '#555'}"></div><div class="node-label">F4</div></div><input type="checkbox" class="node-check" onchange="handleNodeCheckChange(this, 'node-f5-f4')"></div>
-                    <div class="gender-display" id="f5-f4-gender">Hembra</div>
+                    <div class="gender-display" id="f5-f4-display">Hembra</div>
                 </div>
             </div>
             <div class="fase-5-level" style="margin-bottom: 20px;">
                 <div class="node" id="node-f5-f5" style="border-color: #3498db;">
                     <div class="node-top-row"><div class="node-info-left"><div class="node-dot" style="background-color: ${f5Color};"></div><div class="node-label" style="color: #3498db;">F5</div></div><input type="checkbox" class="node-check" onchange="handleNodeCheckChange(this, 'node-f5-f5')"></div>
-                    <select class="gender-select" onchange="handleF5GenderChange(this)">
+                    <select class="gender-select" id="f5-select-val" onchange="actualizarGenerosYCadenas()">
                         <option value="Macho">Macho</option>
                         <option value="Hembra">Hembra</option>
                     </select>
@@ -907,6 +896,7 @@
             </div>
         `;
         wrapper.appendChild(fase5Div);
+        actualizarGenerosYCadenas();
     }
 
     function resetChecks() {
