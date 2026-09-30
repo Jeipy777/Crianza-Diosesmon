@@ -145,7 +145,35 @@
             margin-bottom: 30px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.5);
             overflow-x: auto;
+            position: relative;
         }
+
+        .fase-header-wrapper {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .fase-header-wrapper h2 {
+            margin: 0 auto;
+        }
+
+        .btn-fase-reset {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 12px;
+            position: absolute;
+            right: 0;
+            transition: background 0.2s;
+        }
+        .btn-fase-reset:hover { background: #c0392b; }
 
         .stat-row {
             display: flex;
@@ -174,53 +202,84 @@
 
         .error-msg { color: #e74c3c; font-weight: bold; text-align: center; margin-top: 10px; }
 
-        .tree-level { display: flex; justify-content: space-around; margin-bottom: 25px; position: relative; }
+        /* Estilo moderno y horizontal para las cajas (nodos) */
+        .tree-level { display: flex; justify-content: space-around; margin-bottom: 25px; position: relative; gap: 10px; flex-wrap: wrap; }
+        
         .node {
-            background: #2a2a40;
-            border: 2px solid #444;
+            background: linear-gradient(145deg, #252538, #1a1a29);
+            border: 1px solid #3d3d5c;
             border-radius: 8px;
-            padding: 6px;
-            width: 85px;
-            min-height: 85px;
+            padding: 8px 10px;
+            width: 105px;
+            min-height: 52px;
             display: flex;
             flex-direction: column;
-            align-items: center;
             justify-content: space-between;
             position: relative;
-            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            transition: all 0.25s ease;
         }
 
-        .node-dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
-        .node-label { font-size: 11px; font-weight: bold; color: #ddd; }
+        .node.checked-node {
+            background: linear-gradient(145deg, #1b3b22, #112615) !important;
+            border-color: #2ecc71 !important;
+            box-shadow: 0 0 10px rgba(46, 204, 113, 0.25);
+        }
+
+        .node-top-row {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            align-items: center;
+        }
+
+        .node-info-left {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .node-check {
+            width: 14px;
+            height: 14px;
+            cursor: pointer;
+            accent-color: #2ecc71;
+            margin: 0;
+        }
+
+        .node-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+        .node-label { font-size: 11px; font-weight: bold; color: #ecf0f1; }
 
         .gender-select {
-            background: #1a1a2e;
+            background: #12121a;
             color: #fff;
-            border: 1px solid #555;
+            border: 1px solid #444;
             border-radius: 4px;
             font-size: 10px;
-            padding: 2px;
+            padding: 2px 4px;
             width: 100%;
             cursor: pointer;
-            margin-top: 2px;
+            margin-top: 4px;
+            outline: none;
         }
 
         .gender-display {
             font-size: 10px;
             font-weight: bold;
-            color: #aaa;
-            margin-top: 2px;
-            background: rgba(0,0,0,0.2);
+            color: #a0a0b2;
+            margin-top: 4px;
+            background: rgba(0,0,0,0.3);
             padding: 2px 4px;
             border-radius: 4px;
             width: 100%;
             box-sizing: border-box;
+            text-align: center;
         }
 
-        .tree-level-2 { justify-content: space-around; padding: 0 40px; }
-        .tree-level-3 { justify-content: space-around; padding: 0 120px; }
+        .tree-level-2 { padding: 0 20px; }
+        .tree-level-3 { padding: 0 60px; }
         .tree-level-final { justify-content: center; }
-        .fase-5-level { display: flex; justify-content: space-around; margin-bottom: 25px; padding: 0 100px; }
+        .fase-5-level { display: flex; justify-content: space-around; margin-bottom: 25px; padding: 0 50px; gap: 10px; flex-wrap: wrap; }
 
         /* Sección de Redes Sociales / Footer */
         .social-footer {
@@ -616,6 +675,29 @@
         if (f6Display) f6Display.innerText = oppVal;
     }
 
+    function handleNodeCheckChange(checkbox, nodeId) {
+        const nodeEl = document.getElementById(nodeId);
+        if (nodeEl) {
+            if (checkbox.checked) {
+                nodeEl.classList.add('checked-node');
+            } else {
+                nodeEl.classList.remove('checked-node');
+            }
+        }
+    }
+
+    function resetFaseChecks(faseId) {
+        const container = document.getElementById(faseId);
+        if (container) {
+            container.querySelectorAll('.node-check').forEach(chk => {
+                chk.checked = false;
+            });
+            container.querySelectorAll('.node').forEach(node => {
+                node.classList.remove('checked-node');
+            });
+        }
+    }
+
     function renderFases(counts) {
         const wrapper = document.getElementById('fases-wrapper');
         wrapper.innerHTML = '';
@@ -624,18 +706,36 @@
             let data = calcularAsignacionesFase(counts, faseInfo.p8Target, faseInfo.fase);
             let faseDiv = document.createElement('div');
             faseDiv.className = 'fase-container';
-            faseDiv.innerHTML = `<h2>FASE ${faseInfo.fase}</h2>`;
+            faseDiv.id = `fase-box-${faseInfo.fase}`;
+            faseDiv.innerHTML = `
+                <div class="fase-header-wrapper">
+                    <h2>FASE ${faseInfo.fase}</h2>
+                    <button class="btn-fase-reset" onclick="resetFaseChecks('fase-box-${faseInfo.fase}')">Reset</button>
+                </div>
+            `;
 
             // Nivel 1 (P1 a P8)
             let level1 = document.createElement('div');
             level1.className = 'tree-level';
             for (let i = 0; i < 8; i++) {
                 let node = document.createElement('div');
+                let uniqueId = `node-f${faseInfo.fase}-p${i+1}`;
                 node.className = 'node';
+                node.id = uniqueId;
+
                 let stat = data.p[i];
                 let nodeNum = i + 1;
-                let htmlContent = `<div class="node-dot" style="background-color: ${stat ? stat.color : '#555'}"></div>`;
-                htmlContent += `<div class="node-label">P${nodeNum}</div>`;
+                
+                let htmlContent = `
+                    <div class="node-top-row">
+                        <div class="node-info-left">
+                            <div class="node-dot" style="background-color: ${stat ? stat.color : '#555'}"></div>
+                            <div class="node-label">P${nodeNum}</div>
+                        </div>
+                        <input type="checkbox" class="node-check" onchange="handleNodeCheckChange(this, '${uniqueId}')">
+                    </div>
+                `;
+
                 if (nodeNum % 2 !== 0) {
                     htmlContent += `<select class="gender-select" onchange="handleGenderChange(this, 'gender-p${nodeNum + 1}-${faseInfo.fase}')"><option value="Macho">Macho</option><option value="Hembra">Hembra</option></select>`;
                 } else {
@@ -652,9 +752,20 @@
             let l2Items = [ {id:'P9', s:data.p9, num:9}, {id:'P10', s:data.p10, num:10}, {id:'P11', s:data.p11, num:11}, {id:'P12', s:data.p12, num:12} ];
             l2Items.forEach(item => {
                 let node = document.createElement('div');
+                let uniqueId = `node-f${faseInfo.fase}-${item.id.toLowerCase()}`;
                 node.className = 'node';
-                let htmlContent = `<div class="node-dot" style="background-color: ${item.s ? item.s.color : '#555'}"></div>`;
-                htmlContent += `<div class="node-label">${item.id}</div>`;
+                node.id = uniqueId;
+
+                let htmlContent = `
+                    <div class="node-top-row">
+                        <div class="node-info-left">
+                            <div class="node-dot" style="background-color: ${item.s ? item.s.color : '#555'}"></div>
+                            <div class="node-label">${item.id}</div>
+                        </div>
+                        <input type="checkbox" class="node-check" onchange="handleNodeCheckChange(this, '${uniqueId}')">
+                    </div>
+                `;
+
                 if (item.num % 2 !== 0) {
                     htmlContent += `<select class="gender-select" onchange="handleGenderChange(this, 'gender-p${item.num + 1}-l2-${faseInfo.fase}')"><option value="Macho">Macho</option><option value="Hembra">Hembra</option></select>`;
                 } else {
@@ -671,9 +782,20 @@
             let l3Items = [ {id:'P13', s:data.p13, num:13}, {id:'P14', s:data.p14, num:14} ];
             l3Items.forEach(item => {
                 let node = document.createElement('div');
+                let uniqueId = `node-f${faseInfo.fase}-${item.id.toLowerCase()}`;
                 node.className = 'node';
-                let htmlContent = `<div class="node-dot" style="background-color: ${item.s ? item.s.color : '#555'}"></div>`;
-                htmlContent += `<div class="node-label">${item.id}</div>`;
+                node.id = uniqueId;
+
+                let htmlContent = `
+                    <div class="node-top-row">
+                        <div class="node-info-left">
+                            <div class="node-dot" style="background-color: ${item.s ? item.s.color : '#555'}"></div>
+                            <div class="node-label">${item.id}</div>
+                        </div>
+                        <input type="checkbox" class="node-check" onchange="handleNodeCheckChange(this, '${uniqueId}')">
+                    </div>
+                `;
+
                 if (item.num % 2 !== 0) {
                     htmlContent += `<select class="gender-select" onchange="handleGenderChange(this, 'gender-p${item.num + 1}-l3-${faseInfo.fase}')"><option value="Macho">Macho</option><option value="Hembra">Hembra</option></select>`;
                 } else {
@@ -688,9 +810,19 @@
             let levelFinal = document.createElement('div');
             levelFinal.className = 'tree-level tree-level-final';
             let nodeFinal = document.createElement('div');
+            let uniqueFinalId = `node-f${faseInfo.fase}-final`;
             nodeFinal.className = 'node';
+            nodeFinal.id = uniqueFinalId;
             nodeFinal.style.borderColor = '#f1c40f';
-            let finalHtml = `<div class="node-label" style="margin-top:2px; color:#f1c40f; font-size: 13px;">F${faseInfo.fase}</div>`;
+            
+            let finalHtml = `
+                <div class="node-top-row">
+                    <div class="node-info-left">
+                        <div class="node-label" style="color:#f1c40f; font-size: 12px;">F${faseInfo.fase}</div>
+                    </div>
+                    <input type="checkbox" class="node-check" onchange="handleNodeCheckChange(this, '${uniqueFinalId}')">
+                </div>
+            `;
             
             if (faseInfo.fase === 1) {
                 finalHtml += `<select class="gender-select" onchange="handleF1GenderChange(this)"><option value="Macho">Macho</option><option value="Hembra">Hembra</option></select>`;
@@ -720,33 +852,46 @@
 
         let fase5Div = document.createElement('div');
         fase5Div.className = 'fase-container';
+        fase5Div.id = 'fase-box-5';
         fase5Div.innerHTML = `
-            <h2>FASE 5</h2>
-            <div class="tree-level" style="justify-content: space-around; padding: 0 40px; margin-bottom: 20px;">
-                <div class="node"><div class="node-dot" style="background-color: ${f1Data.f ? f1Data.f.color : '#555'}"></div><div class="node-label">F1</div><div class="gender-display" id="f5-f1-display">Macho</div></div>
-                <div class="node"><div class="node-dot" style="background-color: ${f2Data.f ? f2Data.f.color : '#555'}"></div><div class="node-label">F2</div><div class="gender-display" id="f5-f2-gender">Hembra</div></div>
-                <div class="node"><div class="node-dot" style="background-color: ${f3Data.f ? f3Data.f.color : '#555'}"></div><div class="node-label">F3</div><div class="gender-display" id="f5-f3-display">Macho</div></div>
-                <div class="node"><div class="node-dot" style="background-color: ${f4Data.f ? f4Data.f.color : '#555'}"></div><div class="node-label">F4</div><div class="gender-display" id="f5-f4-gender">Hembra</div></div>
+            <div class="fase-header-wrapper">
+                <h2>FASE 5</h2>
+                <button class="btn-fase-reset" onclick="resetFaseChecks('fase-box-5')">Reset</button>
+            </div>
+            <div class="tree-level" style="justify-content: space-around; padding: 0 20px; margin-bottom: 20px;">
+                <div class="node" id="node-f5-f1">
+                    <div class="node-top-row"><div class="node-info-left"><div class="node-dot" style="background-color: ${f1Data.f ? f1Data.f.color : '#555'}"></div><div class="node-label">F1</div></div><input type="checkbox" class="node-check" onchange="handleNodeCheckChange(this, 'node-f5-f1')"></div>
+                    <div class="gender-display" id="f5-f1-display">Macho</div>
+                </div>
+                <div class="node" id="node-f5-f2">
+                    <div class="node-top-row"><div class="node-info-left"><div class="node-dot" style="background-color: ${f2Data.f ? f2Data.f.color : '#555'}"></div><div class="node-label">F2</div></div><input type="checkbox" class="node-check" onchange="handleNodeCheckChange(this, 'node-f5-f2')"></div>
+                    <div class="gender-display" id="f5-f2-gender">Hembra</div>
+                </div>
+                <div class="node" id="node-f5-f3">
+                    <div class="node-top-row"><div class="node-info-left"><div class="node-dot" style="background-color: ${f3Data.f ? f3Data.f.color : '#555'}"></div><div class="node-label">F3</div></div><input type="checkbox" class="node-check" onchange="handleNodeCheckChange(this, 'node-f5-f3')"></div>
+                    <div class="gender-display" id="f5-f3-display">Macho</div>
+                </div>
+                <div class="node" id="node-f5-f4">
+                    <div class="node-top-row"><div class="node-info-left"><div class="node-dot" style="background-color: ${f4Data.f ? f4Data.f.color : '#555'}"></div><div class="node-label">F4</div></div><input type="checkbox" class="node-check" onchange="handleNodeCheckChange(this, 'node-f5-f4')"></div>
+                    <div class="gender-display" id="f5-f4-gender">Hembra</div>
+                </div>
             </div>
             <div class="fase-5-level" style="margin-bottom: 20px;">
-                <div class="node" style="border-color: #3498db;">
-                    <div class="node-dot" style="background-color: ${f5Color};"></div>
-                    <div class="node-label" style="color: #3498db;">F5</div>
+                <div class="node" id="node-f5-f5" style="border-color: #3498db;">
+                    <div class="node-top-row"><div class="node-info-left"><div class="node-dot" style="background-color: ${f5Color};"></div><div class="node-label" style="color: #3498db;">F5</div></div><input type="checkbox" class="node-check" onchange="handleNodeCheckChange(this, 'node-f5-f5')"></div>
                     <select class="gender-select" onchange="handleF5GenderChange(this)">
                         <option value="Macho">Macho</option>
                         <option value="Hembra">Hembra</option>
                     </select>
                 </div>
-                <div class="node" style="border-color: #3498db;">
-                    <div class="node-dot" style="background-color: ${f6Color};"></div>
-                    <div class="node-label" style="color: #3498db;">F6</div>
+                <div class="node" id="node-f5-f6" style="border-color: #3498db;">
+                    <div class="node-top-row"><div class="node-info-left"><div class="node-dot" style="background-color: ${f6Color};"></div><div class="node-label" style="color: #3498db;">F6</div></div><input type="checkbox" class="node-check" onchange="handleNodeCheckChange(this, 'node-f5-f6')"></div>
                     <div class="gender-display" id="f5-f6-display">Hembra</div>
                 </div>
             </div>
             <div class="tree-level tree-level-final">
-                <div class="node" style="border-color: #f1c40f; width: 110px; justify-content: center; gap: 8px;">
-                    <div class="node-label" style="color:#f1c40f; font-size: 12px; margin: 0;">Full IVs</div>
-                    <div style="font-size: 18px; line-height: 1; margin: 0;">🏆</div>
+                <div class="node" id="node-f5-full" style="border-color: #f1c40f; width: 120px; min-height: 45px; justify-content: center; gap: 4px;">
+                    <div class="node-top-row" style="justify-content: space-between;"><div class="node-label" style="color:#f1c40f; font-size: 11px;">Full IVs 🏆</div><input type="checkbox" class="node-check" onchange="handleNodeCheckChange(this, 'node-f5-full')"></div>
                 </div>
             </div>
         `;
