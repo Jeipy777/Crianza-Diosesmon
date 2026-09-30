@@ -449,7 +449,7 @@
         const infoContainer = document.getElementById('egg-groups-info');
 
         if (!query) {
-            resultsContainer.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: #e74c3c;">⚠️ Por favor, ingresa el nombre de un Pokémon para buscar.</p>`;
+            resultsContainer.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: #e74c3c;">⚠ Por favor, ingresa el nombre de un Pokémon para buscar.</p>`;
             infoContainer.innerHTML = '';
             return;
         }
@@ -614,18 +614,29 @@
         let secondaryStat = statsOrdenados[1];
         let thirdStat = statsOrdenados[2];
         
-        let statsConValor1 = statsOrdenados.filter(s => counts[s.id] === 1);
+        let statsConValor1 = statsConfig.filter(s => counts[s.id] === 1);
         let color1 = statsConValor1[0] || statsOrdenados[statsOrdenados.length - 1];
         let color1Plus = statsConValor1[1] || color1;
-        let color2 = statsOrdenados.find(s => counts[s.id] === 2) || statsOrdenados[3];
+        let color2 = statsConfig.find(s => counts[s.id] === 2) || statsOrdenados[3];
 
         let targetStat = color1;
         if (faseIndex === 2 || faseIndex === 3) targetStat = color2;
         else if (faseIndex === 4) targetStat = color1Plus;
 
         if (faseIndex === 4) {
-            primaryStat = statsOrdenados[1];
-            secondaryStat = statsOrdenados[0];
+            // Corrección absoluta basada en el valor real seleccionado (16 y 8)
+            let stat16 = statsConfig.find(s => {
+                let chk = document.querySelector(`.stat-checkbox[data-stat="${s.id}"][data-value="16"]`);
+                return chk && chk.checked;
+            }) || statsOrdenados[0];
+
+            let stat8 = statsConfig.find(s => {
+                let chk = document.querySelector(`.stat-checkbox[data-stat="${s.id}"][data-value="8"]`);
+                return chk && chk.checked;
+            }) || statsOrdenados[1];
+
+            primaryStat = stat16;
+            secondaryStat = stat8;
         }
 
         asignacionesP[0] = primaryStat;   
